@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ class ventana_modal_view extends StatefulWidget {
 }
 
 class _ventana_modal_viewState extends State<ventana_modal_view> {
+  double size_word = 17;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,12 +38,12 @@ class _ventana_modal_viewState extends State<ventana_modal_view> {
 
               for (var tipo_uso in usos_permitidos) {
                 String? tipo_uso_string = tipos_uso_nombre[tipo_uso];
-                var texto = Text(tipo_uso_string!);
+                var texto = Text(tipo_uso + " - " + tipo_uso_string!);
                 usos_permitidos_list.add(texto);
               }
               for (var tipo_uso_no in usos_no_permitidos) {
                 String? tipo_uso_no_string = tipos_uso_nombre[tipo_uso_no];
-                var texto = Text(tipo_uso_no_string!);
+                var texto = Text(tipo_uso_no + " - " + tipo_uso_no_string!);
                 usos_no_permitidos_list.add(texto);
               }
 
@@ -56,26 +59,40 @@ class _ventana_modal_viewState extends State<ventana_modal_view> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text("Clave Catastral: ${value[0]["clave"]}"),
-                              Text("Tipo: ${value[0]["tipo"]}"),
-                              Text("ubicacion:  ${value[0]["ubicacion"]}"),
-                              Text("colonia: ${value[0]["colonia"]}"),
-                              Text(
+                              Container(
+                                padding: EdgeInsetsDirectional.only(bottom: 10),
+                                child: const Text(
+                                  "Datos del lugar",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                  ),
+                                ),
+                              ),
+                              info_total(
+                                  "Clave Catastral: ${value[0]["clave"]}"),
+                              info_total("Tipo: ${value[0]["tipo"]}"),
+                              info_total(
+                                  "Ubicacion:  ${value[0]["ubicacion"]}"),
+                              info_total("Colonia: ${value[0]["colonia"]}"),
+                              info_total(
+                                  "Clave Catastral: ${value[0]["clave"]}"),
+                              info_total(
                                   "Superficie de Terreno: Escritura - ${value[0]["superficieLegal"].toString()} m2"),
-                              Text(
+                              info_total(
                                   "Superficie de Terreno: Cartografía - ${value[0]["superficieCarto"].toStringAsFixed(2)} m2"),
-                              Text(
+                              info_total(
                                   "Superficie Construida: ${value[0]["superficieConstruccion"].toString()} m2"),
-                              Text(
+                              info_total(
                                   "Frente de Predio: ${value[0]["frente"].toString()} m"),
-                              Text(
+                              info_total(
                                   "Zonificacion: ${value[0]["clave"].toString()}"),
-                              Text(
+                              info_total(
                                   "COS: ${value[0]["cos"].toStringAsFixed(2)}"),
-                              Text(
+                              info_total(
                                   "COS:  ${value[0]["zonificacion_default"]["cos"].toString()} 0"),
-                              Text("CUS: ${inDoubleCus.toString()}"),
-                              Text(
+                              info_total("CUS: ${inDoubleCus.toString()}"),
+                              info_total(
                                   "CUS permitido:  ${value[0]["zonificacion_default"]["cus_max"].toString()}"),
                             ],
                           ),
@@ -100,6 +117,16 @@ class _ventana_modal_viewState extends State<ventana_modal_view> {
             });
           },
         ),
+      ),
+    );
+  }
+
+  Widget info_total(data) {
+    return Container(
+      padding: const EdgeInsetsDirectional.only(bottom: 5),
+      child: Text(
+        data,
+        style: TextStyle(fontSize: size_word),
       ),
     );
   }
