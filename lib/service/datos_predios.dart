@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 Future<dynamic> data_predio() async {
   final response = await http.get(Uri.parse(
-      'https://visorurbano.com:3000/api/v2/catastro/predio/search?calle=GARCIA%20JESUS&numeroExterior=3020'));
+      'https://visorurbano.com:3000/api/v2/catastro/predio/search?calle=SANCHEZ%20PRISCILIANO&numeroExterior=595'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
