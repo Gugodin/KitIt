@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:gsheets/gsheets.dart';
 
@@ -35,16 +36,23 @@ class ExcelReader {
   }
 
   static Future<List<double>> modifyLatAndLon(double lat, double long) async {
-    print(await _converter!.values.value(column: 1, row: 2));
-    print(await _converter!.values.value(column: 2, row: 2));
 
-    await _converter!.values.insertValue(lat, column: 2, row: 2);
-    await _converter!.values.insertValue(long, column: 1, row: 2);
+    var rng = Random();
+
+    int row = rng.nextInt(998) + 2;
+
+    print('Checar la fila----------------${row}');
+    
+    print(await _converter!.values.value(column: 1, row: row));
+    print(await _converter!.values.value(column: 2, row: row));
+
+    await _converter!.values.insertValue(lat, column: 2, row: row);
+    await _converter!.values.insertValue(long, column: 1, row: row);
 
     double east =
-          double.parse(await _converter!.values.value(column: 30, row: 2));
+          double.parse(await _converter!.values.value(column: 30, row: row));
     double north =
-        double.parse(await _converter!.values.value(column: 31, row: 2));
+        double.parse(await _converter!.values.value(column: 31, row: row));
 
     return [east,north];
 
