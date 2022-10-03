@@ -98,7 +98,7 @@ class _Map1State extends State<Map1> {
 
     Set<Polygon> myPolygon() {
       //
-      // MySQLConnector.prueba(44980);
+      MySQLConnector.prueba(44980);
       Set<Polygon> polygonSet = new Set();
       List<dynamic> lista_polygons_general = [];
       List lista_geometry = [
