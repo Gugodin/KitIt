@@ -7,6 +7,7 @@ import 'package:kitit/resourses/exceReader.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 
 void main() async {
+  MySQLConnector();
   WidgetsFlutterBinding.ensureInitialized();
 
   await ExcelReader.init();

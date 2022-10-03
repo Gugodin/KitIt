@@ -98,7 +98,7 @@ class _Map1State extends State<Map1> {
 
     Set<Polygon> myPolygon() {
       //
-      MySQLConnector.prueba(44980);
+      MySQLConnector.getData(45644);
       Set<Polygon> polygonSet = new Set();
       List<dynamic> lista_polygons_general = [];
       List lista_geometry = [
@@ -292,21 +292,6 @@ class _Map1State extends State<Map1> {
           children: [
             FloatingActionButton(
               onPressed: () {
-                // final GoogleMapController controller = await _controller.future;
-
-                // LatLng latLngPosition = const LatLng(20.6711593, -103.3557154);
-
-                // controller.animateCamera(
-                //   CameraUpdate.newCameraPosition(
-                //     CameraPosition(
-                //       target: latLngPosition,
-                //       zoom: 11.54,
-                //     ),
-                //   ),
-                // );
-
-                // print('Comienza la funcion: ');
-
                 _textLugar.clear();
 
                 setState(() {
@@ -493,7 +478,7 @@ class _Map1State extends State<Map1> {
                                                 "CUS permitido:  ${value[0]["zonificacion_default"]["cus_max"].toString()}"),
                                           ],
                                         ),
-                                        Divider(),
+                                        const Divider(),
                                         Container(
                                           padding:
                                               const EdgeInsetsDirectional.only(
