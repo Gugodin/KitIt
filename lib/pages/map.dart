@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kitit/resourses/exceReader.dart';
+import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -95,7 +96,50 @@ class _Map1State extends State<Map1> {
       });
     }
 
+    Set<Polygon> myPolygon() {
+      //
+      // MySQLConnector.prueba(44980);
+      Set<Polygon> polygonSet = new Set();
+      List<dynamic> lista_polygons_general = [];
+      List lista_geometry = [
+        "-103.38999075,20.61684066,-103.38974568,20.61768809,-103.38947611,20.61762137,-103.38970602,20.61676763,-103.38999075,20.61684066",
+        "-103.383347711, 20.615803398, -103.38343297, 20.61585088, -103.38354794, 20.61591491, -103.383671, 20.61602312, -103.3843708, 20.61640928, -103.38418122, 20.61671897, -103.383972115, 20.617058984, -103.38397138, 20.61706018, -103.38480432, 20.61758386, -103.38473065, 20.61769997, -103.38267355, 20.61645432, -103.38315689, 20.61569712, -103.383347711, 20.615803398"
+      ];
+      for (String lista in lista_geometry) {
+        var res = geometry_data(lista.replaceAll(" ", ""));
+        List<LatLng> polygonCoords = [];
+        int contador1 = 0;
+        int contador2 = 1;
+
+        for (var i = 0; i < res.length / 2; i++) {
+          if (i < res.length / 2) {
+            polygonCoords.add(LatLng(
+                double.parse(res[contador1]), double.parse(res[contador2])));
+
+            print(res[contador1] + "," + res[contador2]);
+            contador1 = contador1 + 2;
+            contador2 = contador2 + 2;
+          }
+        }
+
+        polygonSet.add(
+          Polygon(
+            polygonId: const PolygonId('test'),
+            points: polygonCoords,
+            zIndex: 1,
+            strokeColor: Colors.red.shade600,
+            strokeWidth: 5,
+            fillColor: Colors.red.shade100,
+            geodesic: true,
+          ),
+        );
+      }
+      return polygonSet;
+    }
+
     GoogleMap mapa = GoogleMap(
+      polygons: myPolygon(),
+
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
       onTap: onTap,
@@ -552,5 +596,12 @@ class _Map1State extends State<Map1> {
         style: TextStyle(fontSize: size_word),
       ),
     );
+  }
+
+  List geometry_data(String data_string) {
+    List<dynamic>? lista_datos = [];
+    lista_datos = data_string.split(",");
+
+    return lista_datos.reversed.toList();
   }
 }
