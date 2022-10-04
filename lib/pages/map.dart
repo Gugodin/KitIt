@@ -19,6 +19,8 @@ class Map1 extends StatefulWidget {
 }
 
 class _Map1State extends State<Map1> {
+  Set<Polygon> _polygonSet = Set<Polygon>();
+
   List lista_geometry = [];
   @override
   final TextEditingController _textLugar = TextEditingController();
@@ -99,10 +101,7 @@ class _Map1State extends State<Map1> {
     }
 
     Set<Polygon> myPolygon() {
-      print(
-          "______________________________________________________------******");
-      // print(lista_geometry);
-      Set<Polygon> polygonSet = new Set();
+      print("Holaaaaaaaaa estoy en poligon");
       List<dynamic> lista_polygons_general = [];
       List lista_geometry = [
         "-103.38999075,20.61684066,-103.38974568,20.61768809,-103.38947611,20.61762137,-103.38970602,20.61676763,-103.38999075,20.61684066",
@@ -126,7 +125,7 @@ class _Map1State extends State<Map1> {
           }
         }
 
-        polygonSet.add(
+        _polygonSet.add(
           Polygon(
             polygonId: const PolygonId('test'),
             points: polygonCoords,
@@ -138,13 +137,14 @@ class _Map1State extends State<Map1> {
           ),
         );
       }
-      return polygonSet;
+      print(_polygonSet);
+      return _polygonSet;
     }
 
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
-      // polygons: myPolygon(),
+      polygons: _polygonSet,
       onTap: onTap,
       markers: markers,
       initialCameraPosition: _kGooglePlex,
@@ -222,9 +222,11 @@ class _Map1State extends State<Map1> {
                           final resultados = await MySQLConnector.getData(
                               placemarks[0].postalCode);
                           print(
-                              "______________________________________puto rodrigo ");
+                              "____________________________________________________________________________________");
                           print(resultados);
                           setState(() {
+                       
+                            myPolygon();
                             postionOnTap = latLngPosition;
                             if (contador == 0) {
                               contador += 1;
