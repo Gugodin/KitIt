@@ -153,7 +153,7 @@ class _Map1State extends State<Map1> {
       },
     );
 
-    getLocation() async {
+    getLocation() async { 
       List<Location> locations =
           await locationFromAddress("${_textLugar.text}, Guadalajara, Jal.");
 
