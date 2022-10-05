@@ -23,8 +23,10 @@ class _Map1State extends State<Map1> {
   Set<Polygon> _polygonSet = new Set();
 
   List lista_geometry = [];
+
   @override
   final TextEditingController _textLugar = TextEditingController();
+
   Completer<GoogleMapController> _controller = Completer();
   int contador = 0;
   LatLng? postionOnTap;
@@ -46,6 +48,7 @@ class _Map1State extends State<Map1> {
 
   @override
   Widget build(BuildContext context) {
+    // _textLugar.text = "Jesus Garcia 3020";
     // final TextEditingController textLugar = TextEditingController();
 
     String? address;
@@ -86,15 +89,6 @@ class _Map1State extends State<Map1> {
             _markersController.sink.add(id);
             latlon1 = latLngPosition;
           },
-          // draggable: true,
-          // onDragEnd: (newPosition) {
-          //   //print("el marcador se puso en las longitudes $newPosition");
-          //   print("latitud ");
-
-          //   position = newPosition;
-
-          //   print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
-          // },
         );
 
         _markers[markerId] = marker;
@@ -102,15 +96,15 @@ class _Map1State extends State<Map1> {
     }
 
     Set<Polygon> myPolygon(List lista_geometry) {
+      // List lista_geometry = [
+      //   [
+      //     "-103.436011266,20.461008555,-103.435744766,20.460960965,-103.435866119,20.460335167,-103.436113583,20.4603661,-103.436011266,20.461008555"
+      //   ]
+      // ];
       print("lista que viene de DB -----------------------------");
       print(lista_geometry.length);
       int conta = 0;
-
-      // List lista_geometry = [
-      //   "-103.38999075,20.61684066,-103.38974568,20.61768809,-103.38947611,20.61762137,-103.38970602,20.61676763,-103.38999075,20.61684066",
-      //   "-103.383347711, 20.615803398, -103.38343297, 20.61585088, -103.38354794, 20.61591491, -103.383671, 20.61602312, -103.3843708, 20.61640928, -103.38418122, 20.61671897, -103.383972115, 20.617058984, -103.38397138, 20.61706018, -103.38480432, 20.61758386, -103.38473065, 20.61769997, -103.38267355, 20.61645432, -103.38315689, 20.61569712, -103.383347711, 20.615803398"
-      // ];
-      // List lista_geometry =
+      var aux;
       for (List lista in lista_geometry) {
         print("lista en for each ------------------------");
         print(lista);
@@ -118,27 +112,26 @@ class _Map1State extends State<Map1> {
 
         _polygonSet.add(
           Polygon(
-            polygonId: PolygonId('test ' + conta.toString()),
-            points: polygonCoords,
-            zIndex: 1,
-            strokeColor: Colors.red.shade600,
-            strokeWidth: 5,
-            fillColor: Colors.red.shade100,
-            geodesic: true,
-            onTap: () {
-              print("hola_____________________________________________");
-            },
-          ),
+              polygonId: PolygonId('test $conta'),
+              points: polygonCoords,
+              consumeTapEvents: true,
+              zIndex: 1,
+              strokeColor: Colors.red.shade600,
+              strokeWidth: 5,
+              fillColor: Colors.red.shade100,
+              onTap: () {}),
         );
+
         conta = conta + 1;
       }
-      // print(_polygonSet.first.);
+     
       return _polygonSet;
     }
 
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
+
       polygons: _polygonSet,
       onTap: onTap,
       markers: markers,
@@ -554,10 +547,6 @@ class _Map1State extends State<Map1> {
     var data_geometry = data;
     List<LatLng> polygonCoords = [];
 
-    print(data.length);
-    print("===========================================================");
-    print(data[0]);
-    print(data[0].runtimeType);
     var new_list = data[0].replaceAll(" ", "").split(",");
 
     while (new_list.isNotEmpty) {
