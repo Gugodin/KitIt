@@ -100,44 +100,38 @@ class _Map1State extends State<Map1> {
       });
     }
 
-    Set<Polygon> myPolygon() {
-      print("Holaaaaaaaaa estoy en poligon");
-      List<dynamic> lista_polygons_general = [];
-      List lista_geometry = [
-        "-103.38999075,20.61684066,-103.38974568,20.61768809,-103.38947611,20.61762137,-103.38970602,20.61676763,-103.38999075,20.61684066",
-        "-103.383347711, 20.615803398, -103.38343297, 20.61585088, -103.38354794, 20.61591491, -103.383671, 20.61602312, -103.3843708, 20.61640928, -103.38418122, 20.61671897, -103.383972115, 20.617058984, -103.38397138, 20.61706018, -103.38480432, 20.61758386, -103.38473065, 20.61769997, -103.38267355, 20.61645432, -103.38315689, 20.61569712, -103.383347711, 20.615803398"
-      ];
+    Set<Polygon> myPolygon(List lista_geometry) {
+      print("lista que viene de DB -----------------------------");
+      print(lista_geometry.length);
+      int conta = 0;
+
+      // List lista_geometry = [
+      //   "-103.38999075,20.61684066,-103.38974568,20.61768809,-103.38947611,20.61762137,-103.38970602,20.61676763,-103.38999075,20.61684066",
+      //   "-103.383347711, 20.615803398, -103.38343297, 20.61585088, -103.38354794, 20.61591491, -103.383671, 20.61602312, -103.3843708, 20.61640928, -103.38418122, 20.61671897, -103.383972115, 20.617058984, -103.38397138, 20.61706018, -103.38480432, 20.61758386, -103.38473065, 20.61769997, -103.38267355, 20.61645432, -103.38315689, 20.61569712, -103.383347711, 20.615803398"
+      // ];
       // List lista_geometry =
-      for (String lista in lista_geometry) {
-        var res = geometry_data(lista.replaceAll(" ", ""));
-        List<LatLng> polygonCoords = [];
-        int contador1 = 0;
-        int contador2 = 1;
-
-        for (var i = 0; i < res.length / 2; i++) {
-          if (i < res.length / 2) {
-            polygonCoords.add(LatLng(
-                double.parse(res[contador1]), double.parse(res[contador2])));
-
-            print(res[contador1] + "," + res[contador2]);
-            contador1 = contador1 + 2;
-            contador2 = contador2 + 2;
-          }
-        }
+      for (List lista in lista_geometry) {
+        print("lista en for each ------------------------");
+        print(lista);
+        List<LatLng> polygonCoords = geometry_data(lista);
 
         _polygonSet.add(
           Polygon(
-            polygonId: const PolygonId('test'),
+            polygonId: PolygonId('test ' + conta.toString()),
             points: polygonCoords,
             zIndex: 1,
             strokeColor: Colors.red.shade600,
             strokeWidth: 5,
             fillColor: Colors.red.shade100,
             geodesic: true,
+            onTap: () {
+              print("hola_____________________________________________");
+            },
           ),
         );
+        conta = conta + 1;
       }
-      print(_polygonSet);
+      // print(_polygonSet.first.);
       return _polygonSet;
     }
 
@@ -201,7 +195,6 @@ class _Map1State extends State<Map1> {
                                     BorderRadius.all(Radius.circular(5.0)))),
                       ),
                     ),
-
                     ElevatedButton(
                         onPressed: () async {
                           // print('ENTRE AL ZOOM');
@@ -221,12 +214,9 @@ class _Map1State extends State<Map1> {
                           //placemarks[0].postalCode
                           final resultados = await MySQLConnector.getData(
                               placemarks[0].postalCode);
-                          print(
-                              "____________________________________________________________________________________");
-                          print(resultados);
+
                           setState(() {
-                       
-                            myPolygon();
+                            myPolygon(resultados);
                             postionOnTap = latLngPosition;
                             if (contador == 0) {
                               contador += 1;
@@ -253,14 +243,6 @@ class _Map1State extends State<Map1> {
                           });
                         },
                         child: const Icon(Icons.search))
-
-                    // IconButton(
-                    //     color: Colors.black,
-                    //     onPressed: searchAddres(textLugar.text),
-                    //     // onPressed: () {
-                    //     //   print('aAAAAAAAAa');
-                    //     // },
-                    //     icon: const Icon(Icons.search))
                   ],
                 ),
               ),
@@ -268,10 +250,6 @@ class _Map1State extends State<Map1> {
           ),
         ),
       ),
-      // Column(children: [
-
-      //   Center(child: Container(width: device_data.size.width,height: device_data.size.height-100,child: mapa,),)
-      // ],),
       floatingActionButton: Container(
         padding: const EdgeInsetsDirectional.only(start: 20),
         child: Row(
@@ -279,8 +257,7 @@ class _Map1State extends State<Map1> {
           children: [
             FloatingActionButton(
               onPressed: () {
-                // MySQLConnector.getData(45644);
-
+                _polygonSet.clear();
                 _textLugar.clear();
 
                 setState(() {
@@ -572,10 +549,22 @@ class _Map1State extends State<Map1> {
     );
   }
 
-  List geometry_data(String data_string) {
-    List<dynamic>? lista_datos = [];
-    lista_datos = data_string.split(",");
+  List<LatLng> geometry_data(List data) {
+    var data_geometry = data;
+    List<LatLng> polygonCoords = [];
 
-    return lista_datos.reversed.toList();
+    print(data.length);
+    print("===========================================================");
+    print(data[0]);
+    print(data[0].runtimeType);
+    var new_list = data[0].replaceAll(" ", "").split(",");
+
+    while (new_list.isNotEmpty) {
+      var lat = double.parse(new_list.removeLast());
+      var lon = double.parse(new_list.removeLast());
+      polygonCoords.add(LatLng(lat, lon));
+    }
+
+    return polygonCoords;
   }
 }
