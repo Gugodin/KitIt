@@ -38,8 +38,8 @@ class MySQLConnector {
     List geometry_list = [];
     List aux = [];
     var result = await connector.execute(
-        "SELECT * FROM agebs where codigoPostal=44600 ",
-        // "select manz.geometry from ageb join manz on ageb.idageb = manz.idageb where ageb.codigoPostal= :CP",
+        // "SELECT * FROM agebs where region=5 ",
+        "select agebs.geometry from agebs  where agebs.codigoPostal= :CP",
         {'CP': CP});
 
     for (final row in result.rows) {
