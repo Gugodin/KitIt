@@ -190,8 +190,10 @@ class _Map1State extends State<Map1> {
                           // print('ENTRE AL ZOOM');
 
                           if (_textLugar.text == '') {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(content: Text('Escribe una direccion por favor')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Escribe una direccion por favor')));
                           } else {
                             print('Direccion: ');
                             print(direccion.value);
@@ -287,12 +289,14 @@ class _Map1State extends State<Map1> {
                       data_predio_cordenada(coordsUTM).then(
                         (value) {
                           modal_window modal = modal_window(context, size_word);
+                          bool bandera_venta = true;
                           if (value.length == 0) {
                             //redondeo de cus
-                            modal.venta_modal_error();
-                          } else {
-                            modal.venta_modal_info(value, device_data);
+                            // modal.venta_modal_error();
+                            bandera_venta = false;
                           }
+                          modal.venta_modal_info(
+                              value, device_data, bandera_venta);
                         },
                       );
                     },
