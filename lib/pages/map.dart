@@ -323,8 +323,7 @@ class _Map1State extends State<Map1> {
           fillColor: Colors.red.shade100,
           onTap: () {
             _customInfoWindowController.addInfoWindow!(
-               
-                polygonCoords[0]);
+                Text("a"), polygonCoords[0]);
 
             // InfoWindow(title: "Hola");
             // print(contadorList[i]);
