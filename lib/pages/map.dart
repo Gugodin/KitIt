@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:ffi';
 
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'dart:async';
@@ -21,6 +22,8 @@ class Map1 extends StatefulWidget {
 }
 
 class _Map1State extends State<Map1> {
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
   // Set<Polygon> _polygonSet = Set<Polygon>();
   Set<Polygon> _polygonSet = new Set();
 
@@ -97,35 +100,6 @@ class _Map1State extends State<Map1> {
       });
     }
 
-    Set<Polygon> myPolygon(List lista_geometry) {
-      print("lista que viene de DB -----------------------------");
-      print(lista_geometry.length);
-      int conta = 0;
-      var aux;
-      for (List lista in lista_geometry) {
-        // print("lista en for each ------------------------");
-        // print(lista);
-        List<LatLng> polygonCoords = geometry_data(lista);
-
-        _polygonSet.add(
-          Polygon(
-              polygonId: PolygonId('test $conta'),
-              points: polygonCoords,
-              consumeTapEvents: true,
-              zIndex: 1,
-              strokeColor: Colors.red.shade600,
-              strokeWidth: 5,
-              fillColor: Colors.red.shade100,
-              
-              onTap: () {}),
-        );
-
-        conta = conta + 1;
-      }
-
-      return _polygonSet;
-    }
-
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       zoomControlsEnabled: false,
@@ -134,7 +108,11 @@ class _Map1State extends State<Map1> {
       //markers: markers,
       initialCameraPosition: _kGooglePlex,
       onMapCreated: (GoogleMapController controller) {
+        _customInfoWindowController.googleMapController = controller;
         _controller.complete(controller);
+      },
+      onCameraMove: (latLngPosition) {
+        _customInfoWindowController.onCameraMove!();
       },
     );
 
@@ -152,12 +130,21 @@ class _Map1State extends State<Map1> {
         child: SingleChildScrollView(
           child: Stack(
             children: [
+              CustomInfoWindow(
+                controller: _customInfoWindowController,
+              ),
               Center(
                 child: Container(
                   width: device_data.size.width,
                   height: device_data.size.height,
                   child: mapa,
                 ),
+              ),
+              CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 100,
+                width: 50,
+                offset: 20,
               ),
               Container(
                 padding: const EdgeInsets.only(top: 7),
@@ -283,7 +270,7 @@ class _Map1State extends State<Map1> {
                               Text('Escribe o selecciona una zona por favor')));
                     },
                     backgroundColor: DesingColors.bottonDisable,
-                    child: Icon(Icons.do_disturb_alt_outlined),
+                    child: const Icon(Icons.do_disturb_alt_outlined),
                   );
                 } else {
                   return SpeedDial(
@@ -304,28 +291,6 @@ class _Map1State extends State<Map1> {
                           child: const Icon(Icons.route_rounded)),
                     ],
                   );
-
-                  // FloatingActionButton(
-                  //   child: const Icon(Icons.menu),
-                  //   onPressed: () async {
-
-                  //     List<double> coordsUTM =
-                  //         await ExcelReader.modifyLatAndLon(
-                  //             postionOnTap!.latitude, postionOnTap!.longitude);
-
-                  //     data_predio_cordenada(coordsUTM).then(
-                  //       (value) {
-                  //         modal_window modal = modal_window(context, size_word);
-                  //         if (value.length == 0) {
-                  //           modal.venta_modal_error();
-                  //         } else {
-                  //           modal.venta_modal_info(value, device_data);
-                  //         }
-                  //       },
-                  //     );
-                  //   },
-                  // );
-
                 }
               },
             )
@@ -335,9 +300,48 @@ class _Map1State extends State<Map1> {
     );
   }
 
+  Set<Polygon> myPolygon(List lista_geometry) {
+    // _customInfoWindowController.dispose();
+    print(lista_geometry.length);
+    int conta = 0;
+    var aux;
+    List contadorList = [];
+    for (var i = 0; i < lista_geometry.length; i++) {
+      // print("lista en for each ------------------------");
+      // print(lista);
+      List<LatLng> polygonCoords = geometry_data(lista_geometry[i]);
+      contadorList.add(conta);
+      print(polygonCoords[0]);
+      _polygonSet.add(
+        Polygon(
+          polygonId: PolygonId('test $conta'),
+          points: polygonCoords,
+          consumeTapEvents: true,
+          zIndex: 1,
+          strokeColor: Colors.red.shade600,
+          strokeWidth: 5,
+          fillColor: Colors.red.shade100,
+          onTap: () {
+            _customInfoWindowController.addInfoWindow!(
+               
+                polygonCoords[0]);
+
+            // InfoWindow(title: "Hola");
+            // print(contadorList[i]);
+          },
+        ),
+      );
+      conta = conta + 1;
+    }
+    return _polygonSet;
+  }
+
   void onTap(LatLng position) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
+    final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+
+    myPolygon(resultados);
 
     if (contador == 0) {
       contador += 1;
