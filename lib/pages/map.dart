@@ -101,57 +101,10 @@ class _Map1State extends State<Map1> {
       });
     }
 
-    Set<Polygon> myPolygon(
-      List lista_geometry,
-    ) {
-      print("lista que viene de DB -----------------------------");
-      print(lista_geometry[1].length);
-      int conta = 0;
-      var aux;
-
-      List hola = [];
-
-      for (var i = 0; i < lista_geometry[1].length; i++) {
-        // print("lista en for each ------------------------");
-        // print(lista);
-        List<LatLng> polygonCoords = geometry_data(lista_geometry[1][i]);
-        hola.add(conta);
-        Polygon po = Polygon(
-            polygonId: PolygonId('test $conta'),
-            points: polygonCoords,
-            consumeTapEvents: true,
-            zIndex: -1,
-            strokeColor: Colors.red.shade600,
-            strokeWidth: 5,
-            fillColor: Colors.red.shade100,
-            onTap: () {
-              print('Hola menso ${lista_geometry[2][i]}');
-            });
-
-        Polygon po2 = Polygon(
-            polygonId: PolygonId('test $conta'),
-            points: polygonCoords,
-            consumeTapEvents: false,
-            zIndex: -1,
-            strokeColor: Colors.red.shade600,
-            strokeWidth: 5,
-            fillColor: Colors.red.shade100,
-            onTap: () {
-              print('Hola menso ${lista_geometry[2][i]}');
-            });
-        _polygonSetDisable.add(po2);
-        _polygonSet.add(po);
-
-        conta = conta + 1;
-      }
-
-      return _polygonSet;
-    }
-
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       zoomControlsEnabled: false,
-      polygons: hammerIsTaped == true ? _polygonSetDisable :_polygonSet,
+      polygons: hammerIsTaped == true ? _polygonSetDisable : _polygonSet,
       onTap: onTap,
       markers: markers,
       initialCameraPosition: _kGooglePlex,
@@ -241,7 +194,7 @@ class _Map1State extends State<Map1> {
 
                             hasPaintedAZone = true;
 
-                            myPolygon(resultados);
+                            printPolygon(resultados);
 
                             postionOnTap = latLngPosition;
 
@@ -378,9 +331,56 @@ class _Map1State extends State<Map1> {
     );
   }
 
+  Set<Polygon> printPolygon(List lista_geometry) {
+    print("lista que viene de DB -----------------------------");
+    print(lista_geometry[1].length);
+    int conta = 0;
+    var aux;
+
+    List hola = [];
+
+    for (var i = 0; i < lista_geometry[1].length; i++) {
+      // print("lista en for each ------------------------");
+      // print(lista);
+      List<LatLng> polygonCoords = geometry_data(lista_geometry[1][i]);
+      hola.add(conta);
+      Polygon po = Polygon(
+          polygonId: PolygonId('test $conta'),
+          points: polygonCoords,
+          consumeTapEvents: true,
+          zIndex: -1,
+          strokeColor: Colors.red.shade600,
+          strokeWidth: 5,
+          fillColor: Colors.red.shade100,
+          onTap: () {
+            print('Hola menso ${lista_geometry[2][i]}');
+          });
+
+      Polygon po2 = Polygon(
+          polygonId: PolygonId('test $conta'),
+          points: polygonCoords,
+          consumeTapEvents: false,
+          zIndex: -1,
+          strokeColor: Colors.red.shade600,
+          strokeWidth: 5,
+          fillColor: Colors.red.shade100,
+          );
+      _polygonSetDisable.add(po2);
+      _polygonSet.add(po);
+
+      conta = conta + 1;
+    }
+
+    return _polygonSet;
+  }
+
   void onTap(LatLng position) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
+    final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+
+    printPolygon(resultados);
+
     print('ESTAS TAPEANDO EL MAPA');
     if (hammerIsTaped) {
       print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');

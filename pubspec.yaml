@@ -41,6 +41,7 @@ dependencies:
   mysql_client: ^0.0.26
   ffi: ^2.0.1
   flutter_speed_dial: ^6.1.0+1
+  custom_info_window: ^1.0.1
   
 dev_dependencies:
   flutter_test:
