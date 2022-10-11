@@ -33,8 +33,9 @@ class _Map1State extends State<Map1> {
   Completer<GoogleMapController> _controller = Completer();
   int contador = 0;
   LatLng? postionOnTap;
-  double size_word = 17;
+
   late LatLng latlon1;
+
   bool hammerIsTaped = false;
   bool hasPaintedAZone = false;
   // bool disableOnTapPolygon = ;
@@ -43,6 +44,7 @@ class _Map1State extends State<Map1> {
   Set<Marker> get markers => _markers.values.toSet();
 
   final _markersController = StreamController<String>.broadcast();
+
   Stream<String> get onMarkerTap => _markersController.stream;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -54,11 +56,6 @@ class _Map1State extends State<Map1> {
 
   @override
   Widget build(BuildContext context) {
-    // _textLugar.text = "Jesus Garcia 3020";
-    // final TextEditingController textLugar = TextEditingController();
-
-    String? address;
-
     var device_data = MediaQuery.of(context);
 
     Completer<GoogleMapController> _controller = Completer();
@@ -103,7 +100,7 @@ class _Map1State extends State<Map1> {
 
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
-      zoomControlsEnabled: false,
+      // zoomControlsEnabled: false,
       polygons: hammerIsTaped == true ? _polygonSetDisable : _polygonSet,
       onTap: onTap,
       markers: markers,
@@ -185,7 +182,7 @@ class _Map1State extends State<Map1> {
                               await placemarkFromCoordinates(
                                   latLngPosition.latitude,
                                   latLngPosition.longitude);
-                          //placemarks[0].postalCode
+
                           final resultados = await MySQLConnector.getData(
                               placemarks[0].postalCode);
 
@@ -194,7 +191,7 @@ class _Map1State extends State<Map1> {
 
                             hasPaintedAZone = true;
 
-                            printPolygon(resultados);
+                            myPolygon(resultados);
 
                             postionOnTap = latLngPosition;
 
@@ -281,12 +278,10 @@ class _Map1State extends State<Map1> {
                           backgroundColor: DesingColors.yellow,
                           onTap: () {
                             setState(() {
-                              hammerIsTaped = !hammerIsTaped;
-
-                              for (Polygon element in _polygonSet) {
-                                print('AAaaaaAAAAAAAAAAAAAAAAAAAAAAA');
-                                print(element.consumeTapEvents);
+                              if (hammerIsTaped) {
+                                _markers.remove(const MarkerId('hammerMaker'));
                               }
+                              hammerIsTaped = !hammerIsTaped;
 
                               print(
                                   'CAMBIO EL MARTILLO A TRUE____________ ${hammerIsTaped}');
@@ -331,7 +326,61 @@ class _Map1State extends State<Map1> {
     );
   }
 
-  Set<Polygon> printPolygon(List lista_geometry) {
+  void onTap(LatLng position) async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+
+    print('ESTAS TAPEANDO EL MAPA');
+    final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+
+    if (!hasPaintedAZone) {
+      print('PINTANDO POLIGONOS______________________________________________________________________');
+      setState(() {
+        hasPaintedAZone = true;
+        myPolygon(resultados);
+      });
+
+    }
+
+    if (hammerIsTaped) {
+      print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
+      setState(() {
+        postionOnTap = position;
+        // _textLugar.text = transformAddress(placemarks[0].street!);
+
+        String id = 'hammerMaker';
+        final markerId = MarkerId(id);
+
+        final marker = Marker(
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          markerId: markerId,
+          position: position,
+          zIndex: 2,
+          anchor: const Offset(0.5, 1),
+          onTap: () {
+            _markersController.sink.add(id);
+            latlon1 = position;
+          },
+          draggable: true,
+          onDragEnd: (newPosition) {
+            //print("el marcador se puso en las longitudes $newPosition");
+            print("latitud ");
+
+            position = newPosition;
+
+            print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
+          },
+        );
+
+        _markers[markerId] = marker;
+      });
+    }
+  }
+
+  Set<Polygon> myPolygon(
+    List lista_geometry,
+  ) {
     print("lista que viene de DB -----------------------------");
     print(lista_geometry[1].length);
     int conta = 0;
@@ -364,7 +413,9 @@ class _Map1State extends State<Map1> {
           strokeColor: Colors.red.shade600,
           strokeWidth: 5,
           fillColor: Colors.red.shade100,
-          );
+          onTap: () {
+            print('Hola menso ${lista_geometry[2][i]}');
+          });
       _polygonSetDisable.add(po2);
       _polygonSet.add(po);
 
@@ -372,50 +423,6 @@ class _Map1State extends State<Map1> {
     }
 
     return _polygonSet;
-  }
-
-  void onTap(LatLng position) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-    final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
-
-    printPolygon(resultados);
-
-    print('ESTAS TAPEANDO EL MAPA');
-    if (hammerIsTaped) {
-      print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
-      setState(() {
-        postionOnTap = position;
-        // _textLugar.text = transformAddress(placemarks[0].street!);
-
-        final id = _markers.length.toString();
-        final markerId = MarkerId(id);
-
-        final marker = Marker(
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          markerId: markerId,
-          position: position,
-          zIndex: 2,
-          anchor: const Offset(0.5, 1),
-          onTap: () {
-            _markersController.sink.add(id);
-            latlon1 = position;
-          },
-          draggable: true,
-          onDragEnd: (newPosition) {
-            //print("el marcador se puso en las longitudes $newPosition");
-            print("latitud ");
-
-            position = newPosition;
-
-            print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
-          },
-        );
-
-        _markers[markerId] = marker;
-      });
-    }
   }
 
   List<LatLng> geometry_data(List data) {
