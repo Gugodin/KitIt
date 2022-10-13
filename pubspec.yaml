@@ -42,6 +42,9 @@ dependencies:
   ffi: ^2.0.1
   flutter_speed_dial: ^6.1.0+1
   custom_info_window: ^1.0.1
+  provider: ^6.0.4
+
+  
   
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:kitit/providers/polygons_data.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:kitit/pages/page_modal_window.dart';
 import 'package:kitit/pages/map.dart';
@@ -23,13 +24,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'z',
-        debugShowCheckedModeBanner: false,
-        initialRoute: 'map',
-        routes: {
-          'map': (BuildContext context) => Map1(),
-        });
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => polygonsData(),
+      child: MaterialApp(
+          title: 'z',
+          debugShowCheckedModeBanner: false,
+          initialRoute: 'map',
+          routes: {
+            'map': (BuildContext context) => Map1(),
+          }),
+    );
   }
 }
 

@@ -1,17 +1,23 @@
 import 'dart:collection';
 import 'dart:ffi';
 
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kitit/assets/ColorPolygon.dart';
 import 'package:kitit/assets/colors.dart';
+import 'package:kitit/providers/polygons_data.dart';
 import 'package:kitit/resourses/exceReader.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:kitit/widgets/modal_window.dart';
+import 'package:kitit/widgets/polygons_metods.dart';
+import 'package:kitit/widgets/widow_map.dart';
+import 'package:provider/provider.dart';
 
 class Map1 extends StatefulWidget {
   Map1({Key? key}) : super(key: key);
@@ -22,8 +28,12 @@ class Map1 extends StatefulWidget {
 
 class _Map1State extends State<Map1> {
   // Set<Polygon> _polygonSet = Set<Polygon>();
+  StreamController<String> controller = new StreamController<String>();
+
   Set<Polygon> _polygonSet = new Set();
   Set<Polygon> _polygonSetDisable = new Set();
+  CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
 
   List lista_geometry = [];
 
@@ -56,6 +66,7 @@ class _Map1State extends State<Map1> {
 
   @override
   Widget build(BuildContext context) {
+    final poligonos_data_provier = Provider.of<polygonsData>(context);
     var device_data = MediaQuery.of(context);
 
     Completer<GoogleMapController> _controller = Completer();
@@ -106,7 +117,12 @@ class _Map1State extends State<Map1> {
       markers: markers,
       initialCameraPosition: _kGooglePlex,
       onMapCreated: (GoogleMapController controller) {
+        _customInfoWindowController.googleMapController = controller;
+
         _controller.complete(controller);
+      },
+      onCameraMove: (latLngPosition) {
+        _customInfoWindowController.onCameraMove!();
       },
     );
 
@@ -119,6 +135,11 @@ class _Map1State extends State<Map1> {
       return locations;
     }
 
+
+
+
+    
+
     return Scaffold(
       body: Center(
         child: Stack(
@@ -129,6 +150,12 @@ class _Map1State extends State<Map1> {
                 height: device_data.size.height,
                 child: mapa,
               ),
+            ),
+            CustomInfoWindow(
+              controller: _customInfoWindowController,
+              height: 230,
+              width: 200,
+              offset: 100,
             ),
             Container(
               padding: const EdgeInsets.only(top: 7),
@@ -159,69 +186,48 @@ class _Map1State extends State<Map1> {
                     ),
                   ),
                   ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(primary: DesingColors.dark),
-                      onPressed: () async {
-                        // print('ENTRE AL ZOOM');
+                    style: ElevatedButton.styleFrom(primary: DesingColors.dark),
+                    onPressed: () async {
+                      // print('ENTRE AL ZOOM');
 
-                        if (_textLugar.text == '') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Escribe o selecciona una zona por favor')));
-                        } else {
-                          print('Direccion: ');
-                          print(direccion.value);
+                      if (_textLugar.text == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Escribe o selecciona una zona por favor')));
+                      } else {
+                        print('Direccion: ');
+                        print(direccion.value);
 
-                          final locations = await getLocation();
+                        final locations = await getLocation();
 
-                          LatLng latLngPosition = LatLng(
-                              locations[0].latitude, locations[0].longitude);
+                        LatLng latLngPosition = LatLng(
+                            locations[0].latitude, locations[0].longitude);
 
-                          List<Placemark> placemarks =
-                              await placemarkFromCoordinates(
-                                  latLngPosition.latitude,
-                                  latLngPosition.longitude);
+                        List<Placemark> placemarks =
+                            await placemarkFromCoordinates(
+                                latLngPosition.latitude,
+                                latLngPosition.longitude);
 
-                          final resultados = await MySQLConnector.getData(
-                              placemarks[0].postalCode);
+                        final resultados = await MySQLConnector.getData(
+                            placemarks[0].postalCode);
 
-                          setState(() {
-                            print('PINTAR LA ZONA_______________');
+                        setState(() {
+                          print('PINTAR LA ZONA_______________');
 
-                            hasPaintedAZone = true;
+                          hasPaintedAZone = true;
 
-                            myPolygon(resultados);
+                          myPolygon(resultados);
 
-                            postionOnTap = latLngPosition;
-
-                            // if (contador == 0) {
-                            //   contador += 1;
-
-                            //   final id = _markers.length.toString();
-                            //   final markerId = MarkerId(id);
-
-                            //   final marker = Marker(
-                            //     icon: BitmapDescriptor.defaultMarkerWithHue(
-                            //         BitmapDescriptor.hueAzure),
-                            //     markerId: markerId,
-                            //     position: latLngPosition,
-                            //     anchor: const Offset(0.5, 1),
-                            //     onTap: () {
-                            //       _markersController.sink.add(id);
-                            //       latlon1 = latLngPosition;
-                            //     },
-                            //   );
-
-                            //   _markers[markerId] = marker;
-                            // }
-                          });
-                        }
-                      },
-                      child: const Icon(
-                        Icons.search_rounded,
-                        // color: DesingColors.yellow,
-                      ))
+                          postionOnTap = latLngPosition;
+                        });
+                      }
+                    },
+                    child: const Icon(
+                      Icons.search_rounded,
+                      // color: DesingColors.yellow,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -295,28 +301,6 @@ class _Map1State extends State<Map1> {
                           child: const Icon(Icons.route_rounded)),
                     ],
                   );
-
-                  // FloatingActionButton(
-                  //   child: const Icon(Icons.menu),
-                  //   onPressed: () async {
-
-                  //     List<double> coordsUTM =
-                  //         await ExcelReader.modifyLatAndLon(
-                  //             postionOnTap!.latitude, postionOnTap!.longitude);
-
-                  //     data_predio_cordenada(coordsUTM).then(
-                  //       (value) {
-                  //         modal_window modal = modal_window(context, size_word);
-                  //         if (value.length == 0) {
-                  //           modal.venta_modal_error();
-                  //         } else {
-                  //           modal.venta_modal_info(value, device_data);
-                  //         }
-                  //       },
-                  //     );
-                  //   },
-                  // );
-
                 }
               },
             )
@@ -327,6 +311,7 @@ class _Map1State extends State<Map1> {
   }
 
   void onTap(LatLng position) async {
+    _customInfoWindowController.hideInfoWindow!();
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
 
@@ -334,12 +319,12 @@ class _Map1State extends State<Map1> {
     final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
 
     if (!hasPaintedAZone) {
-      print('PINTANDO POLIGONOS______________________________________________________________________');
+      print(
+          'PINTANDO POLIGONOS______________________________________________________________________');
       setState(() {
         hasPaintedAZone = true;
         myPolygon(resultados);
       });
-
     }
 
     if (hammerIsTaped) {
@@ -381,41 +366,55 @@ class _Map1State extends State<Map1> {
   Set<Polygon> myPolygon(
     List lista_geometry,
   ) {
-    print("lista que viene de DB -----------------------------");
-    print(lista_geometry[1].length);
+  
     int conta = 0;
     var aux;
 
     List hola = [];
 
     for (var i = 0; i < lista_geometry[1].length; i++) {
-      // print("lista en for each ------------------------");
-      // print(lista);
-      List<LatLng> polygonCoords = geometry_data(lista_geometry[1][i]);
+
+      List<LatLng> polygonCoords =
+          polygonsMetods().geometry_data(lista_geometry[1][i]);
       hola.add(conta);
+      var paa = PolygonId("a");
       Polygon po = Polygon(
-          polygonId: PolygonId('test $conta'),
-          points: polygonCoords,
-          consumeTapEvents: true,
-          zIndex: -1,
-          strokeColor: Colors.red.shade600,
-          strokeWidth: 5,
-          fillColor: Colors.red.shade100,
-          onTap: () {
-            print('Hola menso ${lista_geometry[2][i]}');
+        geodesic: true,
+        polygonId: PolygonId(lista_geometry[0][i]),
+        points: polygonCoords,
+        consumeTapEvents: true,
+        zIndex: -1,
+        strokeColor: ColorPolygon.borderColor,
+        strokeWidth: 5,
+        fillColor: ColorPolygon.filling,
+        onTap: () async {
+   
+          var win = _customInfoWindowController.addInfoWindow!(
+              window_map(
+                data: lista_geometry[2][i],
+                nameManzana: lista_geometry[0][i],
+                listaPolygons: _polygonSet,
+              ),
+              polygonCoords[0]);
+          win;
+
+          setState(() {
+        
+            polygon_seleccion(lista_geometry[0][i]);
           });
+        },
+      );
 
       Polygon po2 = Polygon(
-          polygonId: PolygonId('test $conta'),
-          points: polygonCoords,
-          consumeTapEvents: false,
-          zIndex: -1,
-          strokeColor: Colors.red.shade600,
-          strokeWidth: 5,
-          fillColor: Colors.red.shade100,
-          onTap: () {
-            print('Hola menso ${lista_geometry[2][i]}');
-          });
+        geodesic: true,
+        polygonId: PolygonId('test $conta'),
+        points: polygonCoords,
+        consumeTapEvents: false,
+        zIndex: -1,
+        strokeColor: Colors.red.shade600,
+        strokeWidth: 5,
+        fillColor: Colors.red.shade100,
+      );
       _polygonSetDisable.add(po2);
       _polygonSet.add(po);
 
@@ -425,18 +424,24 @@ class _Map1State extends State<Map1> {
     return _polygonSet;
   }
 
-  List<LatLng> geometry_data(List data) {
-    var data_geometry = data;
-    List<LatLng> polygonCoords = [];
+  void polygon_seleccion(ageb) async {
+    final resultados = await MySQLConnector.getPolygonBYageb(ageb);
+    print(resultados);
+    List<LatLng> polygonCoords_2 =
+        polygonsMetods().geometry_data(resultados[0]);
 
-    var new_list = data[0].replaceAll(" ", "").split(",");
-
-    while (new_list.isNotEmpty) {
-      var lat = double.parse(new_list.removeLast());
-      var lon = double.parse(new_list.removeLast());
-      polygonCoords.add(LatLng(lat, lon));
-    }
-
-    return polygonCoords;
+    Polygon po = Polygon(
+      geodesic: true,
+      polygonId: const PolygonId("seleccion"),
+      points: polygonCoords_2,
+      consumeTapEvents: true,
+      zIndex: -1,
+      strokeColor: ColorPolygon.filling,
+      strokeWidth: 5,
+      fillColor: ColorPolygon.borderColor,
+    );
+    setState(() {
+      _polygonSet.add(po);
+    });
   }
 }
