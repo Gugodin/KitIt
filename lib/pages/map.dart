@@ -35,6 +35,9 @@ class _Map1State extends State<Map1> {
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
 
+  CustomInfoWindowController _bandera_cotroller_window =
+      CustomInfoWindowController();
+
   List lista_geometry = [];
 
   @override
@@ -66,7 +69,6 @@ class _Map1State extends State<Map1> {
 
   @override
   Widget build(BuildContext context) {
-    final poligonos_data_provier = Provider.of<polygonsData>(context);
     var device_data = MediaQuery.of(context);
 
     Completer<GoogleMapController> _controller = Completer();
@@ -134,11 +136,6 @@ class _Map1State extends State<Map1> {
 
       return locations;
     }
-
-
-
-
-    
 
     return Scaffold(
       body: Center(
@@ -366,14 +363,12 @@ class _Map1State extends State<Map1> {
   Set<Polygon> myPolygon(
     List lista_geometry,
   ) {
-  
     int conta = 0;
     var aux;
 
     List hola = [];
 
     for (var i = 0; i < lista_geometry[1].length; i++) {
-
       List<LatLng> polygonCoords =
           polygonsMetods().geometry_data(lista_geometry[1][i]);
       hola.add(conta);
@@ -388,18 +383,19 @@ class _Map1State extends State<Map1> {
         strokeWidth: 5,
         fillColor: ColorPolygon.filling,
         onTap: () async {
-   
-          var win = _customInfoWindowController.addInfoWindow!(
-              window_map(
-                data: lista_geometry[2][i],
-                nameManzana: lista_geometry[0][i],
-                listaPolygons: _polygonSet,
-              ),
-              polygonCoords[0]);
+
+          CustomInfoWindowController win =
+              _customInfoWindowController.addInfoWindow!(
+                  window_map(
+                    data: lista_geometry[2][i],
+                    controller_window: _customInfoWindowController,
+                    listaPolygons: _polygonSet,
+                  ),
+                  polygonCoords[0]);
           win;
+          
 
           setState(() {
-        
             polygon_seleccion(lista_geometry[0][i]);
           });
         },

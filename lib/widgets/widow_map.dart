@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -13,12 +14,12 @@ import '../assets/colors.dart';
 
 class window_map extends StatefulWidget {
   var data;
-  var nameManzana;
+  CustomInfoWindowController controller_window;
   Set<Polygon> listaPolygons;
   window_map({
     super.key,
     required this.data,
-    required this.nameManzana,
+    required this.controller_window,
     required this.listaPolygons,
   });
 
@@ -30,7 +31,6 @@ class _window_mapState extends State<window_map> {
   StreamController<String> controller = new StreamController<String>();
   @override
   Widget build(BuildContext context) {
-    final poligonos_data_pro = Provider.of<polygonsData>(context);
     return Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -50,11 +50,12 @@ class _window_mapState extends State<window_map> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      widget.listaPolygons.remove(PolygonId("seleccion"));
+                      widget.controller_window.hideInfoWindow;
+                      // widget.listaPolygons.remove(PolygonId("seleccion"));
 
-                      controller.sink.add("seleccion");
+                      // controller.sink.add("seleccion");
 
-                      print("holaa");
+                      // print("holaa");
                     },
                     icon: const Icon(
                         size: 15, Icons.close, color: DesingColors.dark),

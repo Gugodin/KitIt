@@ -24,16 +24,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (BuildContext context) => polygonsData(),
-      child: MaterialApp(
-          title: 'z',
-          debugShowCheckedModeBanner: false,
-          initialRoute: 'map',
-          routes: {
-            'map': (BuildContext context) => Map1(),
-          }),
-    );
+    return MaterialApp(
+        title: 'z',
+        debugShowCheckedModeBanner: false,
+        initialRoute: 'map',
+        routes: {
+          'map': (BuildContext context) => Map1(),
+        });
   }
 }
 
