@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kitit/assets/ColorPolygon.dart';
@@ -34,9 +35,8 @@ class _Map1State extends State<Map1> {
   Set<Polygon> _polygonSetDisable = new Set();
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
-
-  CustomInfoWindowController _bandera_cotroller_window =
-      CustomInfoWindowController();
+  final polygonsData poligon = Get.put(polygonsData());
+  
 
   List lista_geometry = [];
 
@@ -383,7 +383,6 @@ class _Map1State extends State<Map1> {
         strokeWidth: 5,
         fillColor: ColorPolygon.filling,
         onTap: () async {
-
           CustomInfoWindowController win =
               _customInfoWindowController.addInfoWindow!(
                   window_map(
@@ -393,7 +392,6 @@ class _Map1State extends State<Map1> {
                   ),
                   polygonCoords[0]);
           win;
-          
 
           setState(() {
             polygon_seleccion(lista_geometry[0][i]);
