@@ -28,37 +28,25 @@ class Map1 extends StatefulWidget {
 }
 
 class _Map1State extends State<Map1> {
-  // Set<Polygon> _polygonSet = Set<Polygon>();
-  StreamController<String> controller = new StreamController<String>();
-
+  //variables de google maps and polygons
   Set<Polygon> _polygonSet = new Set();
   Set<Polygon> _polygonSetDisable = new Set();
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
-  final polygonsData poligon = Get.put(polygonsData());
-  
-
-  List lista_geometry = [];
-
-  @override
-  final TextEditingController _textLugar = TextEditingController();
-
-  Completer<GoogleMapController> _controller = Completer();
-  int contador = 0;
   LatLng? postionOnTap;
-
   late LatLng latlon1;
-
-  bool hammerIsTaped = false;
-  bool hasPaintedAZone = false;
-  // bool disableOnTapPolygon = ;
-
   final Map<MarkerId, Marker> _markers = {};
   Set<Marker> get markers => _markers.values.toSet();
-
   final _markersController = StreamController<String>.broadcast();
 
+  //controladores en general y banderas
   Stream<String> get onMarkerTap => _markersController.stream;
+  @override
+  final TextEditingController _textLugar = TextEditingController();
+  Completer<GoogleMapController> _controller = Completer();
+  bool hammerIsTaped = false;
+  bool hasPaintedAZone = false;
+  bool window_visiviliti = false;
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(20.6599162, -103.3450723),
@@ -150,9 +138,9 @@ class _Map1State extends State<Map1> {
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
-              height: 230,
+              height: 180,
               width: 200,
-              offset: 100,
+              offset: 80,
             ),
             Container(
               padding: const EdgeInsets.only(top: 7),
@@ -228,6 +216,43 @@ class _Map1State extends State<Map1> {
                 ],
               ),
             ),
+            Builder(builder: (context) {
+              print(window_visiviliti);
+              if (window_visiviliti == true) {
+                return Container(
+                  margin: EdgeInsets.only(
+                      top: device_data.size.height - 690,
+                      left: device_data.size.width - 65),
+                  child: FloatingActionButton(
+                    backgroundColor: DesingColors.dark,
+                    onPressed: () {
+                      Set<Polygon> _polygonSet_auxiliar = new Set();
+
+                      var tam_polygon_Set = _polygonSet.length;
+                      var contador = 0;
+                      for (var element in _polygonSet) {
+                        if (contador < tam_polygon_Set - 1) {
+                          _polygonSet_auxiliar.add(element.clone());
+                        }
+                        contador++;
+                      }
+
+                      setState(() {
+                        _customInfoWindowController.hideInfoWindow!();
+                        _polygonSet.clear();
+                        _polygonSet.addAll(_polygonSet_auxiliar);
+
+                        window_visiviliti = false;
+                      });
+                    },
+                    child:
+                        const Icon(Icons.visibility_off, color: Colors.white),
+                  ),
+                );
+              } else {
+                return SizedBox();
+              }
+            })
           ],
         ),
       ),
@@ -246,7 +271,6 @@ class _Map1State extends State<Map1> {
                   _markers.clear();
                   hasPaintedAZone = false;
                   hammerIsTaped = false;
-                  contador = 0;
                 });
               },
               child: const Icon(Icons.delete_rounded),
@@ -278,24 +302,26 @@ class _Map1State extends State<Map1> {
                           backgroundColor: DesingColors.yellow,
                           child: const Icon(Icons.family_restroom_rounded)),
                       SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          onTap: () {
-                            setState(() {
-                              if (hammerIsTaped) {
-                                _markers.remove(const MarkerId('hammerMaker'));
-                              }
-                              hammerIsTaped = !hammerIsTaped;
+                        backgroundColor: DesingColors.yellow,
+                        onTap: () {
+                          setState(() {
+                            if (hammerIsTaped) {
+                              _markers.remove(const MarkerId('hammerMaker'));
+                            }
+                            hammerIsTaped = !hammerIsTaped;
 
-                              print(
-                                  'CAMBIO EL MARTILLO A TRUE____________ ${hammerIsTaped}');
-                              // print(
-                              //     'CAMBIO EL MARTILLO A TRUE____________ ${disableOnTapPolygon.value}');
-                            });
-                          },
-                          child: const Icon(Icons.gavel_rounded)),
+                            print(
+                                'CAMBIO EL MARTILLO A TRUE____________ ${hammerIsTaped}');
+                            // print(
+                            //     'CAMBIO EL MARTILLO A TRUE____________ ${disableOnTapPolygon.value}');
+                          });
+                        },
+                        child: const Icon(Icons.gavel_rounded),
+                      ),
                       SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          child: const Icon(Icons.route_rounded)),
+                        backgroundColor: DesingColors.yellow,
+                        child: const Icon(Icons.route_rounded),
+                      ),
                     ],
                   );
                 }
@@ -383,17 +409,15 @@ class _Map1State extends State<Map1> {
         strokeWidth: 5,
         fillColor: ColorPolygon.filling,
         onTap: () async {
-          CustomInfoWindowController win =
-              _customInfoWindowController.addInfoWindow!(
-                  window_map(
-                    data: lista_geometry[2][i],
-                    controller_window: _customInfoWindowController,
-                    listaPolygons: _polygonSet,
-                  ),
-                  polygonCoords[0]);
-          win;
+          _customInfoWindowController.addInfoWindow!(
+              window_map(
+                data: lista_geometry[2][i],
+                listaPolygons: _polygonSet,
+              ),
+              polygonCoords[0]);
 
           setState(() {
+            window_visiviliti = true;
             polygon_seleccion(lista_geometry[0][i]);
           });
         },
@@ -409,6 +433,7 @@ class _Map1State extends State<Map1> {
         strokeWidth: 5,
         fillColor: Colors.red.shade100,
       );
+
       _polygonSetDisable.add(po2);
       _polygonSet.add(po);
 

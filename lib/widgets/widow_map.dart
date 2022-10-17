@@ -14,12 +14,11 @@ import '../assets/colors.dart';
 
 class window_map extends StatefulWidget {
   var data;
-  CustomInfoWindowController controller_window;
+
   Set<Polygon> listaPolygons;
   window_map({
     super.key,
     required this.data,
-    required this.controller_window,
     required this.listaPolygons,
   });
 
@@ -39,29 +38,6 @@ class _window_mapState extends State<window_map> {
         child: SizedBox(
           child: Column(
             children: [
-              Container(
-                margin: const EdgeInsets.only(left: 150, top: 10),
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: DesingColors.yellow,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      widget.controller_window.hideInfoWindow;
-                      // widget.listaPolygons.remove(PolygonId("seleccion"));
-
-                      // controller.sink.add("seleccion");
-
-                      // print("holaa");
-                    },
-                    icon: const Icon(
-                        size: 15, Icons.close, color: DesingColors.dark),
-                  ),
-                ),
-              ),
               Expanded(
                 child: ListView(
                   physics: const NeverScrollableScrollPhysics(),
