@@ -176,10 +176,24 @@ class _Map1State extends State<Map1> {
       // POR SI QUIERES ALGUN OTRO IF
     }
 
+    Set<Polygon> paintPolygons() {
+      Set<Polygon> a = {};
+
+      if (hammerIsTaped == true) {
+        a.addAll(_polygonSetDisable);
+        return a;
+      } else {
+        a.addAll(_polygonSet);
+        return a;
+      }
+    }
+
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
-      polygons: hammerIsTaped == true ? _polygonSetDisable : _polygonSet,
+      // polygons: hammerIsTaped == true ? paintPolygons() : _polygonSet,
+
+      polygons: paintPolygons(),
       onTap: onTap,
       markers: markers,
       initialCameraPosition: _kGooglePlex,
@@ -542,6 +556,7 @@ class _Map1State extends State<Map1> {
       strokeWidth: 5,
       fillColor: ColorPolygon.borderColor,
     );
+
     setState(
       () {
         _polygonSet.add(po);
