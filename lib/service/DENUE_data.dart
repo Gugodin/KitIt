@@ -9,17 +9,17 @@ class datosDenue {
 
     if (response.statusCode == 200) {
       List negocios = [];
-      // Si el servidor devuelve una repuesta OK, parseamos el JSON
+  
       var data = json.decode(response.body);
       for (var element in data) {
-        // print(element);
+    
 
         negocios
-            .add([element["Latitud"], element["Longitud"], element["Nombre"]]);
+            .add([element["Latitud"], element["Longitud"], element["Nombre"], element["Clase_actividad"]]);
       }
       return negocios;
     } else {
-      // Si esta respuesta no fue OK, lanza un error.
+
       throw Exception('Failed to load post');
     }
   }
