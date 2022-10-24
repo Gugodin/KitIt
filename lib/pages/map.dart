@@ -1,25 +1,19 @@
-import 'dart:collection';
-import 'dart:ffi';
-
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:get/get.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kitit/assets/ColorPolygon.dart';
 import 'package:kitit/assets/colors.dart';
-import 'package:kitit/providers/polygons_data.dart';
 import 'package:kitit/resourses/exceReader.dart';
-import 'package:kitit/service/DENUE_data.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geocoding/geocoding.dart' as geo;
 import 'package:kitit/widgets/modal_window.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
 import 'package:kitit/widgets/widow_map.dart';
-import 'package:provider/provider.dart';
+
+import '../widgets/markersComers.dart';
 
 class Map1 extends StatefulWidget {
   Map1({Key? key}) : super(key: key);
@@ -34,9 +28,11 @@ class _Map1State extends State<Map1> {
   Set<Polygon> _polygonSetDisable = new Set();
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+  Set<Marker> _markersComers = new Set();
+
   LatLng? postionOnTap;
   late LatLng latlon1;
-  final Map<MarkerId, Marker> _markers = {};
+  late Map<MarkerId, Marker> _markers = {};
   Set<Marker> get markers => _markers.values.toSet();
   final _markersController = StreamController<String>.broadcast();
 
@@ -196,7 +192,7 @@ class _Map1State extends State<Map1> {
 
       polygons: paintPolygons(),
       onTap: onTap,
-      markers: markers,
+      markers: _markersComers,
       initialCameraPosition: _kGooglePlex,
       onMapCreated: (GoogleMapController controller) {
         _customInfoWindowController.googleMapController = controller;
@@ -221,9 +217,9 @@ class _Map1State extends State<Map1> {
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
-              height: 180,
-              width: 200,
-              offset: 80,
+              height: 50,
+              width: 100,
+              offset: 10,
             ),
             Container(
               padding: const EdgeInsets.only(top: 7),
@@ -301,21 +297,29 @@ class _Map1State extends State<Map1> {
                 ],
               ),
             ),
-            // Container(
-            //   margin: EdgeInsets.only(top: 50),
-            //   child: FloatingActionButton(
-            //     backgroundColor: DesingColors.dark,
-            //     onPressed: () async {
-            //       _polygonSet.clear();
-            //       _textLugar.clear();
+            Container(
+              margin: EdgeInsets.only(top: 50),
+              child: FloatingActionButton(
+                backgroundColor: DesingColors.dark,
+                onPressed: () async {
+                  // _polygonSet.clear();
+                  // _textLugar.clear();
 
-            //       var denue_data = await datosDenue.fetchPost("restaurante",
-            //           "20.682323236235217", "-103.3503290595878");
-            //       print(denue_data);
-            //     },
-            //     child: const Icon(Icons.abc),
-            //   ),
-            // ),
+                  // var denue_data = await datosDenue.fetchPost("restaurante",
+                  //     "20.682323236235217", "-103.3503290595878");
+                  // print(denue_data);
+                  // MySQLConnector.getMarkersbyCP("44670");
+                  print("aaaa");
+                  var res_data = await MySQLConnector.getMarkersbyCP("44670");
+                  MarkersCom markersCom = MarkersCom(res_data);
+                  setState(() {
+                    _markersComers = markersCom
+                        .printMarkersComers(_customInfoWindowController);
+                  });
+                },
+                child: const Icon(Icons.abc),
+              ),
+            ),
             Builder(builder: (context) {
               print(window_visiviliti);
               if (window_visiviliti == true) {
@@ -509,7 +513,7 @@ class _Map1State extends State<Map1> {
       List<LatLng> polygonCoords =
           polygonsMetods().geometry_data(listaGeometry[1][i]);
       hola.add(conta);
-      var paa = PolygonId("a");
+
       Polygon po = Polygon(
         geodesic: true,
         polygonId: PolygonId(listaGeometry[0][i]),
