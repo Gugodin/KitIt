@@ -42,7 +42,6 @@ class MarkersCom {
             context: context,
             builder: (BuildContext context) {
               return Container(
-                color: ,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
