@@ -67,6 +67,13 @@ class _Map1State extends State<Map1> {
       // double long = -103.3867676;
 
       final GoogleMapController controller = await _controller.future;
+      final icon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(
+          
+        ), 
+        'lib/assets/icon(2).jpg'
+      );
+
 
       LatLng latLngPosition = LatLng(lat, long);
 
@@ -80,12 +87,11 @@ class _Map1State extends State<Map1> {
       );
 
       setState(() {
+        
         final id = _markers.length.toString();
         final markerId = MarkerId(id);
-
         final marker = Marker(
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon:icon,
           markerId: markerId,
           position: latLngPosition,
           anchor: const Offset(0.5, 1),
@@ -111,6 +117,11 @@ class _Map1State extends State<Map1> {
     void onTap(LatLng position) async {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
+      final icon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), 
+        'lib/assets/icon(2).jpg'
+      );
+
 
       print('ESTAS TAPEANDO EL MAPA');
       final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
@@ -134,8 +145,7 @@ class _Map1State extends State<Map1> {
           final markerId = MarkerId(id);
 
           final marker = Marker(
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueAzure),
+            icon: icon,
             markerId: markerId,
             position: position,
             zIndex: 2,
@@ -404,6 +414,13 @@ class _Map1State extends State<Map1> {
     _customInfoWindowController.hideInfoWindow!();
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
+    final icon = await BitmapDescriptor.fromAssetImage(
+         const ImageConfiguration(
+          //size: Size(20, 20),
+         ), 
+        'lib/assets/icon(2).jpg'
+      );
+
 
     print('ESTAS TAPEANDO EL MAPA');
     final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
@@ -427,8 +444,7 @@ class _Map1State extends State<Map1> {
         final markerId = MarkerId(id);
 
         final marker = Marker(
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon: icon,
           markerId: markerId,
           position: position,
           zIndex: 2,

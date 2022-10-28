@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kitit/assets/ColorPolygon.dart';
 
 import '../service/datos_predios.dart';
 
@@ -15,9 +16,11 @@ class modal_window {
       backgroundColor: Colors.transparent,
       context: context,
       builder: (BuildContext context) {
+        
         return Container(
           decoration: const BoxDecoration(
-              color: Colors.white,
+              
+              color: ColorPolygon.filling,
               borderRadius: BorderRadius.all(Radius.circular(20))),
           height: 600,
           child: Center(
@@ -67,7 +70,7 @@ class modal_window {
           padding: const EdgeInsetsDirectional.only(start: 10, top: 5),
           height: 30,
           width: device_data.size.width - 50,
-          color: const Color(0xff39B339),
+          color: ColorPolygon.filling,
           child: Text(
             "$tipo_uso - ${tipo_uso_string!}",
             style: const TextStyle(fontSize: 15),
@@ -85,7 +88,7 @@ class modal_window {
               const EdgeInsetsDirectional.only(start: 10, top: 5, bottom: 10),
           height: 30,
           width: device_data.size.width - 50,
-          color: const Color(0xff39B339),
+          color: ColorPolygon.filling,
           child: Text(
             tipo_uso_no + " - " + tipo_uso_no_string!,
             style: const TextStyle(fontSize: 15),
@@ -103,7 +106,7 @@ class modal_window {
       builder: (BuildContext context) {
         return Container(
             decoration: const BoxDecoration(
-                color: Colors.white,
+                color: ColorPolygon.filling,
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             height: 600,
             child: Center(
@@ -111,10 +114,12 @@ class modal_window {
                   ? ListView(
                       children: [
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          
+                          mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Container(
+                              
                               padding: const EdgeInsetsDirectional.only(
                                   bottom: 10, top: 10),
                               child: const Text(
@@ -205,6 +210,12 @@ class modal_window {
       },
     );
   }
+
+  // DropdownButton(){
+  //   items: [
+  //    DropdownMenuItem(child: usos_permitidos_list ,value: 1)
+  //   ];
+  // }
 
   Widget info_total(data) {
     return Container(
