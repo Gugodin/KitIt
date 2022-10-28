@@ -192,7 +192,7 @@ class _Map1State extends State<Map1> {
 
       polygons: paintPolygons(),
       onTap: onTap,
-      markers: _markersComers,
+      markers: markers,
       initialCameraPosition: _kGooglePlex,
       onMapCreated: (GoogleMapController controller) {
         _customInfoWindowController.googleMapController = controller;
@@ -302,20 +302,20 @@ class _Map1State extends State<Map1> {
               child: FloatingActionButton(
                 backgroundColor: DesingColors.dark,
                 onPressed: () async {
-                  // _polygonSet.clear();
-                  // _textLugar.clear();
-
-                  // var denue_data = await datosDenue.fetchPost("restaurante",
-                  //     "20.682323236235217", "-103.3503290595878");
-                  // print(denue_data);
-                  // MySQLConnector.getMarkersbyCP("44670");
-                  print("aaaa");
                   var res_data = await MySQLConnector.getMarkersbyCP("44670");
+                  print(res_data);
                   MarkersCom markersCom = MarkersCom(res_data);
-                  setState(() {
-                    _markersComers = markersCom
-                        .printMarkersComers(_customInfoWindowController);
-                  });
+                  setState(
+                    () {
+                      _markersComers = markersCom.printMarkersComers(
+                          _customInfoWindowController, context);
+
+                      for (Marker element in _markersComers) {
+                        _markers[element.markerId] = element;
+                        // markers.add(element);
+                      }
+                    },
+                  );
                 },
                 child: const Icon(Icons.abc),
               ),
