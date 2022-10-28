@@ -302,6 +302,8 @@ class _Map1State extends State<Map1> {
               child: FloatingActionButton(
                 backgroundColor: DesingColors.dark,
                 onPressed: () async {
+
+                  
                   var res_data = await MySQLConnector.getMarkersbyCP("44670");
                   print(res_data);
                   MarkersCom markersCom = MarkersCom(res_data);
@@ -336,6 +338,7 @@ class _Map1State extends State<Map1> {
                       var contador = 0;
                       print("*******************************************");
 
+                       
                       for (Polygon element in _polygonSet) {
                         if (element.polygonId != PolygonId("seleccion")) {
                           PolygonSetAuxiliar.add(element.clone());
