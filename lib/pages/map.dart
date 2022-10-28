@@ -11,6 +11,7 @@ import 'package:kitit/assets/ColorPolygon.dart';
 import 'package:kitit/assets/colors.dart';
 import 'package:kitit/providers/polygons_data.dart';
 import 'package:kitit/resourses/exceReader.dart';
+import 'package:kitit/service/DENUE_data.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
@@ -57,7 +58,7 @@ class _Map1State extends State<Map1> {
 
   @override
   Widget build(BuildContext context) {
-    var device_data = MediaQuery.of(context);
+    var deviceData = MediaQuery.of(context);
 
     Completer<GoogleMapController> _controller = Completer();
 
@@ -139,6 +140,7 @@ class _Map1State extends State<Map1> {
         print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
         setState(() {
           postionOnTap = position;
+
           // _textLugar.text = transformAddress(placemarks[0].street!);
 
           String id = 'hammerMaker';
@@ -175,20 +177,34 @@ class _Map1State extends State<Map1> {
 
         final response = await data_predio_cordenada(coordsUTM);
 
-        bool band_venta = true;
+        bool bandVenta = true;
         if (response.length == 0) {
-          band_venta = false;
+          bandVenta = false;
         }
-        modal.venta_modal_info(response, device_data, band_venta);
+        modal.venta_modal_info(response, deviceData, bandVenta);
       }
 
       // POR SI QUIERES ALGUN OTRO IF
     }
 
+    Set<Polygon> paintPolygons() {
+      Set<Polygon> a = {};
+
+      if (hammerIsTaped == true) {
+        a.addAll(_polygonSetDisable);
+        return a;
+      } else {
+        a.addAll(_polygonSet);
+        return a;
+      }
+    }
+
     GoogleMap mapa = GoogleMap(
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
-      polygons: hammerIsTaped == true ? _polygonSetDisable : _polygonSet,
+      // polygons: hammerIsTaped == true ? paintPolygons() : _polygonSet,
+
+      polygons: paintPolygons(),
       onTap: onTap,
       markers: markers,
       initialCameraPosition: _kGooglePlex,
@@ -208,8 +224,8 @@ class _Map1State extends State<Map1> {
           children: [
             Center(
               child: Container(
-                width: device_data.size.width,
-                height: device_data.size.height,
+                width: deviceData.size.width,
+                height: deviceData.size.height,
                 child: mapa,
               ),
             ),
@@ -229,7 +245,7 @@ class _Map1State extends State<Map1> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: device_data.size.width * 0.7,
+                    width: deviceData.size.width * 0.7,
                     child: TextField(
                       controller: _textLugar,
                       onChanged: (value) {
@@ -250,13 +266,13 @@ class _Map1State extends State<Map1> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: DesingColors.dark),
                     onPressed: () async {
-                      // print('ENTRE AL ZOOM');
-
                       if (_textLugar.text == '') {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Escribe o selecciona una zona por favor')));
+                          const SnackBar(
+                            content:
+                                Text('Escribe o selecciona una zona por favor'),
+                          ),
+                        );
                       } else {
                         print('Direccion: ');
                         print(direccion.value);
@@ -274,15 +290,17 @@ class _Map1State extends State<Map1> {
                         final resultados = await MySQLConnector.getData(
                             placemarks[0].postalCode);
 
-                        setState(() {
-                          print('PINTAR LA ZONA_______________');
+                        setState(
+                          () {
+                            print('PINTAR LA ZONA_______________');
 
-                          hasPaintedAZone = true;
+                            hasPaintedAZone = true;
 
-                          myPolygon(resultados);
+                            myPolygon(resultados);
 
-                          postionOnTap = latLngPosition;
-                        });
+                            postionOnTap = latLngPosition;
+                          },
+                        );
                       }
                     },
                     child: const Icon(
@@ -293,34 +311,56 @@ class _Map1State extends State<Map1> {
                 ],
               ),
             ),
+            // Container(
+            //   margin: EdgeInsets.only(top: 50),
+            //   child: FloatingActionButton(
+            //     backgroundColor: DesingColors.dark,
+            //     onPressed: () async {
+            //       _polygonSet.clear();
+            //       _textLugar.clear();
+
+            //       var denue_data = await datosDenue.fetchPost("restaurante",
+            //           "20.682323236235217", "-103.3503290595878");
+            //       print(denue_data);
+            //     },
+            //     child: const Icon(Icons.abc),
+            //   ),
+            // ),
             Builder(builder: (context) {
               print(window_visiviliti);
               if (window_visiviliti == true) {
                 return Container(
                   margin: EdgeInsets.only(
-                      top: device_data.size.height - 690,
-                      left: device_data.size.width - 65),
+                      top: deviceData.size.height - 690,
+                      left: deviceData.size.width - 65),
                   child: FloatingActionButton(
                     backgroundColor: DesingColors.dark,
                     onPressed: () {
-                      Set<Polygon> _polygonSet_auxiliar = new Set();
-
-                      var tam_polygon_Set = _polygonSet.length;
+                      Set<Polygon> PolygonSetAuxiliar = new Set();
+                      Polygon pol = Polygon(polygonId: PolygonId("seleccion"));
+                      var tamPolygonSet = _polygonSet.length;
                       var contador = 0;
-                      for (var element in _polygonSet) {
-                        if (contador < tam_polygon_Set - 1) {
-                          _polygonSet_auxiliar.add(element.clone());
+                      print("*******************************************");
+
+                      for (Polygon element in _polygonSet) {
+                        if (element.polygonId != PolygonId("seleccion")) {
+                          PolygonSetAuxiliar.add(element.clone());
+                          print(element.polygonId);
                         }
+
                         contador++;
                       }
+                      // print(PolygonSetAuxiliar);
 
-                      setState(() {
-                        _customInfoWindowController.hideInfoWindow!();
-                        _polygonSet.clear();
-                        _polygonSet.addAll(_polygonSet_auxiliar);
+                      setState(
+                        () {
+                          _customInfoWindowController.hideInfoWindow!();
+                          _polygonSet.clear();
+                          _polygonSet.addAll(PolygonSetAuxiliar);
 
-                        window_visiviliti = false;
-                      });
+                          window_visiviliti = false;
+                        },
+                      );
                     },
                     child:
                         const Icon(Icons.visibility_off, color: Colors.white),
@@ -334,7 +374,7 @@ class _Map1State extends State<Map1> {
         ),
       ),
       floatingActionButton: Container(
-        width: device_data.size.width - 30,
+        width: deviceData.size.width - 30,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -348,12 +388,15 @@ class _Map1State extends State<Map1> {
                   _markers.clear();
                   hasPaintedAZone = false;
                   hammerIsTaped = false;
+
+                  _customInfoWindowController.hideInfoWindow!();
+                  window_visiviliti = false;
                 });
               },
               child: const Icon(Icons.delete_rounded),
             ),
             SizedBox(
-              width: device_data.size.width * 0.6,
+              width: deviceData.size.width * 0.6,
             ),
             Builder(
               builder: (context) {
@@ -386,6 +429,8 @@ class _Map1State extends State<Map1> {
                           onTap: () {
                             setState(
                               () {
+                                _customInfoWindowController.hideInfoWindow!();
+                                window_visiviliti = false;
                                 if (hammerIsTaped) {
                                   _markers
                                       .remove(const MarkerId('hammerMaker'));
@@ -411,7 +456,6 @@ class _Map1State extends State<Map1> {
   }
 
   void onTap(LatLng position) async {
-    _customInfoWindowController.hideInfoWindow!();
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
     final icon = await BitmapDescriptor.fromAssetImage(
@@ -470,21 +514,21 @@ class _Map1State extends State<Map1> {
   }
 
   Set<Polygon> myPolygon(
-    List lista_geometry,
+    List listaGeometry,
   ) {
     int conta = 0;
     var aux;
 
     List hola = [];
 
-    for (var i = 0; i < lista_geometry[1].length; i++) {
+    for (var i = 0; i < listaGeometry[1].length; i++) {
       List<LatLng> polygonCoords =
-          polygonsMetods().geometry_data(lista_geometry[1][i]);
+          polygonsMetods().geometry_data(listaGeometry[1][i]);
       hola.add(conta);
       var paa = PolygonId("a");
       Polygon po = Polygon(
         geodesic: true,
-        polygonId: PolygonId(lista_geometry[0][i]),
+        polygonId: PolygonId(listaGeometry[0][i]),
         points: polygonCoords,
         consumeTapEvents: true,
         zIndex: -1,
@@ -494,15 +538,17 @@ class _Map1State extends State<Map1> {
         onTap: () async {
           _customInfoWindowController.addInfoWindow!(
               window_map(
-                data: lista_geometry[2][i],
+                data: listaGeometry[2][i],
                 listaPolygons: _polygonSet,
               ),
               polygonCoords[0]);
 
-          setState(() {
-            window_visiviliti = true;
-            polygon_seleccion(lista_geometry[0][i]);
-          });
+          setState(
+            () {
+              window_visiviliti = true;
+              polygon_seleccion(listaGeometry[0][i]);
+            },
+          );
         },
       );
 
@@ -542,8 +588,11 @@ class _Map1State extends State<Map1> {
       strokeWidth: 5,
       fillColor: ColorPolygon.borderColor,
     );
-    setState(() {
-      _polygonSet.add(po);
-    });
+
+    setState(
+      () {
+        _polygonSet.add(po);
+      },
+    );
   }
 }
