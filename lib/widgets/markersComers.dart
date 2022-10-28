@@ -49,7 +49,7 @@ class MarkersCom {
                     topLeft: Radius.circular(20),
                   ),
                 ),
-                height: 300,
+                height: 400,
                 child: Container(
                   margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: Column(
@@ -64,17 +64,19 @@ class MarkersCom {
                       ),
                       Container(
                         width: 400,
-                        height: 190,
+                        height: 250,
                         child: GridView.count(
                           primary: false,
-                          padding:
-                              EdgeInsets.only(top: 10, left: 60, right: 60),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 15, right: 15),
                           crossAxisSpacing: 5,
                           mainAxisSpacing: 5,
                           crossAxisCount: 3,
                           children: <Widget>[
-                            icon_info("lib/_img/_bosquejo.png",
-                                data_markers[i]["superficie_m3"], "Superficie"),
+                            icon_info(
+                                "lib/_img/_bosquejo.png",
+                                data_markers[i]["superficie_m3"] + "m2",
+                                "Superficie"),
                             icon_info("lib/_img/apertura-de-puerta-abierta.png",
                                 data_markers[i]["num_cuartos"], "Cuartos"),
                             icon_info("lib/_img/bano-publico.png",
@@ -88,12 +90,6 @@ class MarkersCom {
                         child: row_(i, "Informacion adicional: ",
                             data_markers[i]["extras"]),
                       ),
-
-                      // texto_(data_markers[i]["superficie_m3"]),
-                      // texto_(data_markers[i]["num_cuartos"]),
-                      // texto_(data_markers[i]["num_baños"]),
-                      // texto_(data_markers[i]["num_cajones"]),
-                      // texto_(data_markers[i]["extras"]),
                     ],
                   ),
                 ),
