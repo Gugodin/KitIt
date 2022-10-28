@@ -1,3 +1,7 @@
+import 'dart:collection';
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -12,7 +16,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kitit/widgets/modal_window.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
 import 'package:kitit/widgets/widow_map.dart';
-
+import 'package:kitit/service/DENUE_data.dart';
 import '../widgets/markersComers.dart';
 
 class Map1 extends StatefulWidget {
@@ -40,6 +44,7 @@ class _Map1State extends State<Map1> {
   Stream<String> get onMarkerTap => _markersController.stream;
   @override
   final TextEditingController _textLugar = TextEditingController();
+  final TextEditingController _textActividadEconomica = TextEditingController();
   Completer<GoogleMapController> _controller = Completer();
   bool hammerIsTaped = false;
   bool hasPaintedAZone = false;
@@ -51,6 +56,9 @@ class _Map1State extends State<Map1> {
   );
 
   ValueNotifier<String> direccion = ValueNotifier<String>('');
+  ValueNotifier<String> actividadEconomica = ValueNotifier<String>('');
+  ValueNotifier<bool> buttonDisable = ValueNotifier<bool>(true);
+  ValueNotifier<bool> buttonAE = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +114,9 @@ class _Map1State extends State<Map1> {
     }
 
     void onTap(LatLng position) async {
+      setState(() {
+        postionOnTap = LatLng(position.latitude, position.longitude);
+      });
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
 
@@ -185,7 +196,9 @@ class _Map1State extends State<Map1> {
       }
     }
 
+    // int conta=0;
     GoogleMap mapa = GoogleMap(
+      myLocationEnabled: false,
       mapType: MapType.normal,
       // zoomControlsEnabled: false,
       // polygons: hammerIsTaped == true ? paintPolygons() : _polygonSet,
@@ -204,80 +217,82 @@ class _Map1State extends State<Map1> {
       },
     );
 
-    return Scaffold(
-      body: Center(
-        child: Stack(
-          children: [
-            Center(
-              child: Container(
-                width: deviceData.size.width,
-                height: deviceData.size.height,
-                child: mapa,
+    var device_data = MediaQuery.of(context);
+
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Stack(
+            children: [
+              Center(
+                child: Container(
+                  width: device_data.size.width,
+                  height: device_data.size.height,
+                  child: mapa,
+                ),
               ),
-            ),
-            CustomInfoWindow(
-              controller: _customInfoWindowController,
-              height: 50,
-              width: 100,
-              offset: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.only(top: 7),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              margin: const EdgeInsets.only(top: 70, left: 10, right: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width: deviceData.size.width * 0.7,
-                    child: TextField(
-                      controller: _textLugar,
-                      onChanged: (value) {
-                        direccion.value = value;
-                        print(direccion.value);
-                      },
-                      decoration: const InputDecoration(
-                          hoverColor: Colors.black,
-                          labelText: "Ingrese su direccion",
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(style: BorderStyle.none, width: 0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5.0)))),
+              CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 180,
+                width: 200,
+                offset: 80,
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 7),
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: device_data.size.width * 0.7,
+                      child: TextField(
+                        controller: _textLugar,
+                        onChanged: (value) {
+                          direccion.value = value;
+                        },
+                        decoration: const InputDecoration(
+                            hoverColor: Colors.black,
+                            labelText: "Ingrese su direccion",
+                            labelStyle: TextStyle(color: Colors.black),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    style: BorderStyle.none, width: 0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0)))),
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: DesingColors.dark),
-                    onPressed: () async {
-                      if (_textLugar.text == '') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('Escribe o selecciona una zona por favor'),
-                          ),
-                        );
-                      } else {
-                        print('Direccion: ');
-                        print(direccion.value);
+                    ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(primary: DesingColors.dark),
+                      onPressed: () async {
+                        // print('ENTRE AL ZOOM');
 
-                        final locations = await getLocation();
+                        if (_textLugar.text == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Escribe o selecciona una zona por favor')));
+                        } else {
+                          print('Direccion: ');
+                          print(direccion.value);
 
-                        LatLng latLngPosition = LatLng(
-                            locations[0].latitude, locations[0].longitude);
+                          final locations = await getLocation();
 
-                        List<Placemark> placemarks =
-                            await placemarkFromCoordinates(
-                                latLngPosition.latitude,
-                                latLngPosition.longitude);
+                          LatLng latLngPosition = LatLng(
+                              locations[0].latitude, locations[0].longitude);
 
-                        final resultados = await MySQLConnector.getData(
-                            placemarks[0].postalCode);
+                          List<Placemark> placemarks =
+                              await placemarkFromCoordinates(
+                                  latLngPosition.latitude,
+                                  latLngPosition.longitude);
 
-                        setState(
-                          () {
+                          final resultados = await MySQLConnector.getData(
+                              placemarks[0].postalCode);
+
+                          setState(() {
                             print('PINTAR LA ZONA_______________');
 
                             hasPaintedAZone = true;
@@ -285,168 +300,354 @@ class _Map1State extends State<Map1> {
                             myPolygon(resultados);
 
                             postionOnTap = latLngPosition;
-                          },
-                        );
-                      }
-                    },
-                    child: const Icon(
-                      Icons.search_rounded,
-                      // color: DesingColors.yellow,
-                    ),
-                  )
-                ],
+                          });
+                        }
+                      },
+                      child: const Icon(
+                        Icons.search_rounded,
+                        // color: DesingColors.yellow,
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 50),
-              child: FloatingActionButton(
-                backgroundColor: DesingColors.dark,
-                onPressed: () async {
+              Builder(builder: (context) {
+                print('DEBERIA ACTIVAR EL BOTOOON');
+                print(window_visiviliti);
+                print(buttonAE.value);
+                if (window_visiviliti == true || buttonAE.value == true) {
+                  return Container(
+                    margin: EdgeInsets.only(
+                        top: device_data.size.height - 690,
+                        left: device_data.size.width - 65),
+                    child: FloatingActionButton(
+                      backgroundColor: DesingColors.dark,
+                      onPressed: () {
+                        Set<Polygon> _polygonSet_auxiliar = new Set();
 
-                  
-                  var res_data = await MySQLConnector.getMarkersbyCP("44670");
-                  print(res_data);
-                  MarkersCom markersCom = MarkersCom(res_data);
-                  setState(
-                    () {
-                      _markersComers = markersCom.printMarkersComers(
-                          _customInfoWindowController, context);
-
-                      for (Marker element in _markersComers) {
-                        _markers[element.markerId] = element;
-                        // markers.add(element);
-                      }
-                    },
-                  );
-                },
-                child: const Icon(Icons.abc),
-              ),
-            ),
-            Builder(builder: (context) {
-              print(window_visiviliti);
-              if (window_visiviliti == true) {
-                return Container(
-                  margin: EdgeInsets.only(
-                      top: deviceData.size.height - 690,
-                      left: deviceData.size.width - 65),
-                  child: FloatingActionButton(
-                    backgroundColor: DesingColors.dark,
-                    onPressed: () {
-                      Set<Polygon> PolygonSetAuxiliar = new Set();
-                      Polygon pol = Polygon(polygonId: PolygonId("seleccion"));
-                      var tamPolygonSet = _polygonSet.length;
-                      var contador = 0;
-                      print("*******************************************");
-
-                       
-                      for (Polygon element in _polygonSet) {
-                        if (element.polygonId != PolygonId("seleccion")) {
-                          PolygonSetAuxiliar.add(element.clone());
-                          print(element.polygonId);
+                        var tam_polygon_Set = _polygonSet.length;
+                        var contador = 0;
+                        for (var element in _polygonSet) {
+                          if (contador < tam_polygon_Set - 1) {
+                            _polygonSet_auxiliar.add(element.clone());
+                          }
+                          contador++;
                         }
 
-                        contador++;
-                      }
-                      // print(PolygonSetAuxiliar);
-
-                      setState(
-                        () {
+                        setState(() {
                           _customInfoWindowController.hideInfoWindow!();
                           _polygonSet.clear();
-                          _polygonSet.addAll(PolygonSetAuxiliar);
+                          _polygonSet.addAll(_polygonSet_auxiliar);
 
                           window_visiviliti = false;
-                        },
-                      );
-                    },
-                    child:
-                        const Icon(Icons.visibility_off, color: Colors.white),
-                  ),
-                );
-              } else {
-                return SizedBox();
-              }
-            })
-          ],
-        ),
-      ),
-      floatingActionButton: Container(
-        width: deviceData.size.width - 30,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FloatingActionButton(
-              backgroundColor: DesingColors.dark,
-              onPressed: () {
-                _polygonSet.clear();
-                _textLugar.clear();
-
-                setState(() {
-                  _markers.clear();
-                  hasPaintedAZone = false;
-                  hammerIsTaped = false;
-
-                  _customInfoWindowController.hideInfoWindow!();
-                  window_visiviliti = false;
-                });
-              },
-              child: const Icon(Icons.delete_rounded),
-            ),
-            SizedBox(
-              width: deviceData.size.width * 0.6,
-            ),
-            Builder(
-              builder: (context) {
-                if (hasPaintedAZone == false) {
-                  return FloatingActionButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content:
-                              Text('Escribe o selecciona una zona por favor'),
-                        ),
-                      );
-                    },
-                    backgroundColor: DesingColors.bottonDisable,
-                    child: const Icon(Icons.do_disturb_alt_outlined),
+                          buttonAE.value = false;
+                        });
+                      },
+                      child:
+                          const Icon(Icons.visibility_off, color: Colors.white),
+                    ),
                   );
                 } else {
-                  return SpeedDial(
-                    overlayOpacity: 0,
-                    renderOverlay: false,
-                    backgroundColor: DesingColors.dark,
-                    animatedIcon: AnimatedIcons.menu_close,
-                    spaceBetweenChildren: 10,
-                    children: [
-                      SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          child: const Icon(Icons.family_restroom_rounded)),
-                      SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          onTap: () {
-                            setState(
-                              () {
-                                _customInfoWindowController.hideInfoWindow!();
-                                window_visiviliti = false;
-                                if (hammerIsTaped) {
-                                  _markers
-                                      .remove(const MarkerId('hammerMaker'));
-                                }
-                                hammerIsTaped = !hammerIsTaped;
-                              },
-                            );
-                          },
-                          child: const Icon(Icons.gavel_rounded)),
-                      SpeedDialChild(
-                        backgroundColor: DesingColors.yellow,
-                        child: const Icon(Icons.route_rounded),
-                      ),
-                    ],
-                  );
+                  return SizedBox();
                 }
-              },
-            )
-          ],
+              })
+            ],
+          ),
+        ),
+        floatingActionButton: Container(
+          width: device_data.size.width - 30,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                backgroundColor: DesingColors.dark,
+                onPressed: () {
+                  _polygonSet.clear();
+                  _textLugar.clear();
+
+                  setState(() {
+                    _customInfoWindowController.hideInfoWindow!();
+                    window_visiviliti = false;
+                    _markers.clear();
+                    hasPaintedAZone = false;
+                    hammerIsTaped = false;
+                    _textActividadEconomica.clear();
+                    actividadEconomica.value = '';
+                    buttonDisable.value = true;
+                  });
+                },
+                child: const Icon(Icons.delete_rounded),
+              ),
+              SizedBox(
+                width: device_data.size.width * 0.6,
+              ),
+              Builder(
+                builder: (context) {
+                  if (hasPaintedAZone == false) {
+                    return FloatingActionButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Escribe o selecciona una zona por favor'),
+                          ),
+                        );
+                      },
+                      backgroundColor: DesingColors.bottonDisable,
+                      child: const Icon(Icons.do_disturb_alt_outlined),
+                    );
+                  } else {
+                    return SpeedDial(
+                      overlayOpacity: 0,
+                      renderOverlay: false,
+                      backgroundColor: DesingColors.dark,
+                      animatedIcon: AnimatedIcons.menu_close,
+                      spaceBetweenChildren: 10,
+                      children: [
+                        SpeedDialChild(
+                            backgroundColor: DesingColors.yellow,
+                            onTap: () {
+                              setState(
+                                () {
+                                  if (hammerIsTaped) {
+                                    _markers
+                                        .remove(const MarkerId('hammerMaker'));
+                                  }
+                                  hammerIsTaped = !hammerIsTaped;
+                                },
+                              );
+                            },
+                            child: const Icon(Icons.gavel_rounded)),
+                        SpeedDialChild(
+                          backgroundColor: DesingColors.yellow,
+                          child: const Icon(Icons.route_rounded),
+                        ),
+                        SpeedDialChild(
+                            backgroundColor: DesingColors.yellow,
+                            child: const Icon(Icons.storefront),
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder:
+                                      (context) => StatefulBuilder(builder:
+                                              (context, StateSetter setState) {
+                                            return AlertDialog(
+                                              title: const Center(
+                                                  child: Text(
+                                                'Escribe tu actividad economica',
+                                                style: TextStyle(fontSize: 18),
+                                              )),
+                                              /////////////////
+                                              content: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5),
+                                                child: TextField(
+                                                    decoration: InputDecoration(
+                                                        suffixIcon: Container(
+                                                          color: DesingColors
+                                                              .yellow,
+                                                          child: IconButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                var isEconomyActivity =
+                                                                    await datosDenue
+                                                                        .isEconomyActivity(
+                                                                            actividadEconomica.value);
+
+                                                                if (isEconomyActivity) {
+                                                                  print(
+                                                                      'ESTOY HABILITANDO EL BOTOOOOOON');
+                                                                  buttonDisable
+                                                                          .value =
+                                                                      false;
+                                                                  print(buttonDisable
+                                                                      .value);
+                                                                } else {
+                                                                  print(
+                                                                      'ESTA MAL ASI QUE DESABILITAMOS');
+                                                                  buttonDisable
+                                                                          .value =
+                                                                      true;
+                                                                }
+                                                                setState(
+                                                                  () {},
+                                                                );
+                                                              },
+                                                              icon: const Icon(
+                                                                Icons
+                                                                    .search_rounded,
+                                                                color:
+                                                                    DesingColors
+                                                                        .dark,
+                                                              )),
+                                                        ),
+                                                        errorText: actividadEconomica.value !=
+                                                                    '' &&
+                                                                buttonDisable
+                                                                        .value ==
+                                                                    true
+                                                            ? 'Escribe una actividad economica valida por favor'
+                                                            : null,
+                                                        hintText:
+                                                            'Ejemplo: Abarrotes'),
+                                                    controller:
+                                                        _textActividadEconomica,
+                                                    onChanged: (value) {
+                                                      actividadEconomica.value =
+                                                          value;
+                                                    }),
+                                              ),
+                                              ////////////////
+                                              actions: [
+                                                Center(
+                                                  child: ElevatedButton(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                              primary:
+                                                                  DesingColors
+                                                                      .dark),
+                                                      onPressed:
+                                                          buttonDisable.value ==
+                                                                  true
+                                                              ? null
+                                                              : () async {
+                                                                  int cont = 0;
+                                                                  modal_window
+                                                                      modalWindow =
+                                                                      modal_window(
+                                                                          context,
+                                                                          13);
+                                                                  List<Map> list = await datosDenue.fetchPost(
+                                                                      actividadEconomica
+                                                                          .value,
+                                                                      postionOnTap!
+                                                                          .latitude
+                                                                          .toString(),
+                                                                      postionOnTap!
+                                                                          .longitude
+                                                                          .toString());
+
+                                                                  for (var element
+                                                                      in list) {
+                                                                    print(
+                                                                        'Hola este es ${element}');
+
+                                                                    String
+                                                                        name =
+                                                                        element[
+                                                                            'nombre'];
+                                                                    String
+                                                                        descrip =
+                                                                        element[
+                                                                            'descripcion'];
+
+                                                                    double lat =
+                                                                        double.parse(
+                                                                            element['lat']);
+
+                                                                    double lon =
+                                                                        double.parse(
+                                                                            element['lon']);
+
+                                                                    LatLng
+                                                                        position =
+                                                                        LatLng(
+                                                                            lat,
+                                                                            lon);
+
+                                                                    var markerId =
+                                                                        MarkerId(
+                                                                            'rivals$cont');
+                                                                    cont++;
+                                                                    final marker =
+                                                                        Marker(
+                                                                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                                                                          BitmapDescriptor
+                                                                              .hueMagenta),
+                                                                      markerId:
+                                                                          markerId,
+                                                                      position:
+                                                                          position,
+                                                                      zIndex: 2,
+                                                                      anchor:
+                                                                          const Offset(
+                                                                              0.5,
+                                                                              1),
+                                                                      // infoWindow: InfoWindow(
+                                                                      //     title:
+                                                                      //         name,
+                                                                      //     snippet:
+                                                                      //         descrip),
+                                                                      onTap:
+                                                                          () {
+                                                                        buttonAE.value =
+                                                                            true;
+
+                                                                        _customInfoWindowController.addInfoWindow!(
+                                                                            Container(
+                                                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                                                                              decoration: const BoxDecoration(
+                                                                                // border: Border.all(width: 2,color: Colors.black),
+                                                                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                                                color: DesingColors.nuse,
+                                                                              ),
+                                                                              child: Column(
+                                                                                children: [
+                                                                                  Center(
+                                                                                      child: Text(
+                                                                                    name,
+                                                                                    textAlign: TextAlign.center,
+                                                                                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                                                                                  )),
+                                                                                  const Divider(
+                                                                                    color: Colors.white,
+                                                                                    thickness: 2,
+                                                                                  ),
+                                                                                  Text('$descrip.',
+                                                                                      style: const TextStyle(
+                                                                                        fontSize: 13,
+                                                                                        color: Colors.white,
+                                                                                      ),
+                                                                                      textAlign: TextAlign.justify),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            position);
+                                                                        update();
+                                                                      },
+
+                                                                      draggable:
+                                                                          false,
+                                                                    );
+
+                                                                    setState(
+                                                                        () {
+                                                                      _markers[
+                                                                              markerId] =
+                                                                          marker;
+                                                                    });
+                                                                  }
+                                                                  print(
+                                                                      _markers);
+
+                                                                  // ignore: use_build_context_synchronously
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                      child: const Text(
+                                                          'Siguiente')),
+                                                ),
+                                              ],
+                                            );
+                                          }));
+                            }),
+                      ],
+                    );
+                  }
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -549,9 +750,9 @@ class _Map1State extends State<Map1> {
         points: polygonCoords,
         consumeTapEvents: false,
         zIndex: -1,
-        strokeColor: Colors.red.shade600,
+        strokeColor: ColorPolygon.borderColor2,
         strokeWidth: 5,
-        fillColor: Colors.red.shade100,
+        fillColor: ColorPolygon.filling2,
       );
 
       _polygonSetDisable.add(po2);
@@ -585,5 +786,9 @@ class _Map1State extends State<Map1> {
         _polygonSet.add(po);
       },
     );
+  }
+
+  void update() {
+    setState(() {});
   }
 }
