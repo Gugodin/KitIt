@@ -17,7 +17,7 @@ class MySQLConnector {
 
   static void connection() async {
     connector = await MySQLConnection.createConnection(
-      host: "192.168.100.223",
+      host: "192.168.100.63",
       port: 3306,
       userName: "kikit2",
       password: "polloasado1",

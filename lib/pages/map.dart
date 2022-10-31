@@ -521,6 +521,12 @@ class _Map1State extends State<Map1> {
                                                                   true
                                                               ? null
                                                               : () async {
+                                                                    final icon = await BitmapDescriptor.fromAssetImage(
+                                                                    const ImageConfiguration(
+                                                                      //size: Size(20, 20),
+                                                                    ), 
+                                                                    'lib/_img/amarillo(1).png'
+                                                                  );
                                                                   int cont = 0;
                                                                   modal_window
                                                                       modalWindow =
@@ -571,9 +577,7 @@ class _Map1State extends State<Map1> {
                                                                     cont++;
                                                                     final marker =
                                                                         Marker(
-                                                                      icon: BitmapDescriptor.defaultMarkerWithHue(
-                                                                          BitmapDescriptor
-                                                                              .hueMagenta),
+                                                                      icon: icon,
                                                                       markerId:
                                                                           markerId,
                                                                       position:
