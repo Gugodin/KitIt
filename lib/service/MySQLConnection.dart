@@ -81,4 +81,18 @@ class MySQLConnector {
     }
     return geometry_list;
   }
+
+  static Future<List> getMarkersbyCP(CP) async {
+    List markers_list = [];
+    var result = await connector.execute(
+      "select * from datos_prueba where codigoPostal= :CP",
+      {'CP': CP},
+    );
+
+    for (final row in result.rows) {
+   
+      markers_list.add(row.assoc());
+    }
+    return markers_list;
+  }
 }
