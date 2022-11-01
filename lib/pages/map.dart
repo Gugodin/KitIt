@@ -525,7 +525,7 @@ class _Map1State extends State<Map1> {
                                                                     const ImageConfiguration(
                                                                       //size: Size(20, 20),
                                                                     ), 
-                                                                    'lib/_img/amarillo(1).png'
+                                                                    'lib/_img/amarilloyblanco(1).png'
                                                                   );
                                                                   int cont = 0;
                                                                   modal_window
