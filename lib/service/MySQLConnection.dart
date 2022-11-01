@@ -17,7 +17,7 @@ class MySQLConnector {
 
   static void connection() async {
     connector = await MySQLConnection.createConnection(
-      host: "192.168.100.201",
+      host: "192.168.100.82",
       port: 3306,
       userName: "kikit2",
       password: "polloasado1",
@@ -29,10 +29,7 @@ class MySQLConnector {
         'Conexión exitosa a la base de datos____________________________________________________');
   }
 
-  static void prueba() {
-    print('ESTA CONECTADOOOOOOOOOOOO????');
-    print(connector.connected);
-  }
+
 
   static Future<List> getData(CP) async {
     List geometry_list = [];

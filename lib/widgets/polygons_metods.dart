@@ -6,11 +6,11 @@ import 'package:kitit/widgets/widow_map.dart';
 import '../assets/ColorPolygon.dart';
 
 class polygonsMetods {
-  List<LatLng> geometry_data(List data) {
-    var data_geometry = data;
+  List<LatLng> geometry_data(String data) {
+    // var data_geometry = data;
     List<LatLng> polygonCoords = [];
 
-    var new_list = data[0].replaceAll(" ", "").split(",");
+    var new_list = data.replaceAll(" ", "").split(",");
 
     while (new_list.isNotEmpty) {
       var lat = double.parse(new_list.removeLast());

@@ -75,14 +75,14 @@ class MarkersCom {
                           children: <Widget>[
                             icon_info(
                                 "lib/_img/_bosquejo.png",
-                                data_markers[i]["superficie_m3"] + "m2",
+                                "${data_markers[i]["superficie_m3"]}m2",
                                 "Superficie"),
                             icon_info("lib/_img/apertura-de-puerta-abierta.png",
-                                data_markers[i]["num_cuartos"], "Cuartos"),
+                                data_markers[i]["num_cuartos"].toString(), "Cuartos"),
                             icon_info("lib/_img/bano-publico.png",
-                                data_markers[i]["num_baños"], "Baños"),
+                                data_markers[i]["num_baños"].toString(), "Baños"),
                             icon_info("lib/_img/coche.png",
-                                data_markers[i]["num_cajones"], "Cajones"),
+                                data_markers[i]["num_cajones"].toString(), "Cajones"),
                           ],
                         ),
                       ),

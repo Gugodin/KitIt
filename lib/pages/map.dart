@@ -12,6 +12,7 @@ import 'package:kitit/assets/colors.dart';
 import 'package:kitit/resourses/exceReader.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
+import 'package:kitit/service/api-predios.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:kitit/widgets/modal_window.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
@@ -121,13 +122,21 @@ class _Map1State extends State<Map1> {
           await placemarkFromCoordinates(position.latitude, position.longitude);
 
       print('ESTAS TAPEANDO EL MAPA');
-      final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+      // final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+      // for (var element in resultados) {
+      //   print(element);
+      // }
+
+      final resultados =
+          await services.getData_predios(placemarks[0].postalCode);
 
       if (!hasPaintedAZone) {
         print(
             'PINTANDO POLIGONOS______________________________________________________________________');
+        // var res_data =
+        //     await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
         var res_data =
-            await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
+            await services.getMarkersbyCP_predios(placemarks[0].postalCode);
         MarkersCom markerscom = MarkersCom(res_data);
         setState(() {
           hasPaintedAZone = true;
@@ -721,6 +730,9 @@ class _Map1State extends State<Map1> {
   Set<Polygon> myPolygon(
     List listaGeometry,
   ) {
+    for (var element in listaGeometry[1]) {
+      print(element);
+    }
     int conta = 0;
     var aux;
 
@@ -778,10 +790,10 @@ class _Map1State extends State<Map1> {
   }
 
   void polygon_seleccion(ageb) async {
-    final resultados = await MySQLConnector.getPolygonBYageb(ageb);
-    print(resultados);
-    List<LatLng> polygonCoords_2 =
-        polygonsMetods().geometry_data(resultados[0]);
+    // final resultados = await MySQLConnector.getPolygonBYageb(ageb);
+    final resultados = await services.getPolygonBYageb_predios(ageb);
+
+    List<LatLng> polygonCoords_2 = polygonsMetods().geometry_data(resultados);
 
     Polygon po = Polygon(
       geodesic: true,
