@@ -137,9 +137,22 @@ class _Map1State extends State<Map1> {
       if (!hasPaintedAZone) {
         print(
             'PINTANDO POLIGONOS______________________________________________________________________');
+        var res_data =
+            await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
+        MarkersCom markerscom = MarkersCom(res_data);
         setState(() {
           hasPaintedAZone = true;
           myPolygon(resultados);
+
+          _markersComers = markerscom.printMarkersComers(
+              _customInfoWindowController, context);
+          for (Marker element in _markersComers) {
+            _markers[element.markerId] = element;
+          }
+          print(
+              "________________________________________________________________________________ Hola soy marker nuevo");
+          print(_markers.length);
+          print(_markers);
         });
       }
 
@@ -322,9 +335,6 @@ class _Map1State extends State<Map1> {
                 ),
               ),
               Builder(builder: (context) {
-                print('DEBERIA ACTIVAR EL BOTOOON');
-                print(window_visiviliti);
-                print(buttonAE.value);
                 if (window_visiviliti == true || buttonAE.value == true) {
                   return Container(
                     margin: EdgeInsets.only(
@@ -667,63 +677,60 @@ class _Map1State extends State<Map1> {
     );
   }
 
-  void onTap(LatLng position) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-    final icon = await BitmapDescriptor.fromAssetImage(
-         const ImageConfiguration(
-          //size: Size(20, 20),
-         ), 
-        'lib/assets/icon(2).jpg'
-      );
+  // void onTap(LatLng position) async {
+  //   List<Placemark> placemarks =
+  //       await placemarkFromCoordinates(position.latitude, position.longitude);
 
+  //   print('ESTAS TAPEANDO EL MAPA');
+  //   final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
 
-    print('ESTAS TAPEANDO EL MAPA');
-    final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+  //   if (!hasPaintedAZone) {
+  //     print(
+  //         'PINTANDO POLIGONOS______________________________________________________________________');
 
-    if (!hasPaintedAZone) {
-      print(
-          'PINTANDO POLIGONOS______________________________________________________________________');
-      setState(() {
-        hasPaintedAZone = true;
-        myPolygon(resultados);
-      });
-    }
+  //     print(res_data);
+  //     setState(() {
+  //       hasPaintedAZone = true;
+  //       myPolygon(resultados);
 
-    if (hammerIsTaped) {
-      print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
-      setState(() {
-        postionOnTap = position;
-        // _textLugar.text = transformAddress(placemarks[0].street!);
+  //     });
+  //   }
 
-        String id = 'hammerMaker';
-        final markerId = MarkerId(id);
+  //   if (hammerIsTaped) {
+  //     print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
+  //     setState(() {
+  //       postionOnTap = position;
+  //       // _textLugar.text = transformAddress(placemarks[0].street!);
 
-        final marker = Marker(
-          icon: icon,
-          markerId: markerId,
-          position: position,
-          zIndex: 2,
-          anchor: const Offset(0.5, 1),
-          onTap: () {
-            _markersController.sink.add(id);
-            latlon1 = position;
-          },
-          draggable: true,
-          onDragEnd: (newPosition) {
-            //print("el marcador se puso en las longitudes $newPosition");
-            print("latitud ");
+  //       String id = 'hammerMaker';
+  //       final markerId = MarkerId(id);
 
-            position = newPosition;
+  //       final marker = Marker(
+  //         icon:
+  //             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+  //         markerId: markerId,
+  //         position: position,
+  //         zIndex: 2,
+  //         anchor: const Offset(0.5, 1),
+  //         onTap: () {
+  //           _markersController.sink.add(id);
+  //           latlon1 = position;
+  //         },
+  //         draggable: true,
+  //         onDragEnd: (newPosition) {
+  //           //print("el marcador se puso en las longitudes $newPosition");
+  //           print("latitud ");
 
-            print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
-          },
-        );
+  //           position = newPosition;
 
-        _markers[markerId] = marker;
-      });
-    }
-  }
+  //           print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
+  //         },
+  //       );
+
+  //       _markers[markerId] = marker;
+  //     });
+  //   }
+  // }
 
   Set<Polygon> myPolygon(
     List listaGeometry,
