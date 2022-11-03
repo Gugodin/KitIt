@@ -76,7 +76,7 @@ class _Map1State extends State<Map1> {
         const ImageConfiguration(
           
         ), 
-        'lib/assets/icon(2).jpg'
+        'lib/_img/amarilloyblanco(1).png'
       );
 
 
@@ -127,7 +127,7 @@ class _Map1State extends State<Map1> {
           await placemarkFromCoordinates(position.latitude, position.longitude);
       final icon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), 
-        'lib/assets/icon(2).jpg'
+        'lib/_img/amarilloyblanco(1).png'
       );
 
 
