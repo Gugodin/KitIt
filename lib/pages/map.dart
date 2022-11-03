@@ -140,12 +140,14 @@ class _Map1State extends State<Map1> {
         var res_data =
             await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
         MarkersCom markerscom = MarkersCom(res_data);
+        // ignore: use_build_context_synchronously
+        final marcadordeldani = await markerscom.printMarkersComers(
+              _customInfoWindowController, context);
         setState(() {
           hasPaintedAZone = true;
           myPolygon(resultados);
-
-          _markersComers = markerscom.printMarkersComers(
-              _customInfoWindowController, context);
+          _markersComers = marcadordeldani;
+          
           for (Marker element in _markersComers) {
             _markers[element.markerId] = element;
           }
