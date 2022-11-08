@@ -315,8 +315,6 @@ class _Map1State extends State<Map1> {
 
                           var res_data = await MySQLConnector.getMarkersbyCP(
                               placemarks[0].postalCode);
-                          print("el edgar es puto___________________________");
-                          print(res_data);
 
                           MarkersCom markerscom = MarkersCom(res_data);
                           // ignore: use_build_context_synchronously
@@ -336,7 +334,7 @@ class _Map1State extends State<Map1> {
                             postionOnTap = latLngPosition;
 
                             hasPaintedAZone = true;
-                            myPolygon(resultados);
+                            // myPolygon(resultados);
                             _markersComers = marcadordeldani;
 
                             for (Marker element in _markersComers) {
@@ -696,61 +694,6 @@ class _Map1State extends State<Map1> {
     );
   }
 
-  // void onTap(LatLng position) async {
-  //   List<Placemark> placemarks =
-  //       await placemarkFromCoordinates(position.latitude, position.longitude);
-
-  //   print('ESTAS TAPEANDO EL MAPA');
-  //   final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
-
-  //   if (!hasPaintedAZone) {
-  //     print(
-  //         'PINTANDO POLIGONOS______________________________________________________________________');
-
-  //     print(res_data);
-  //     setState(() {
-  //       hasPaintedAZone = true;
-  //       myPolygon(resultados);
-
-  //     });
-  //   }
-
-  //   if (hammerIsTaped) {
-  //     print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
-  //     setState(() {
-  //       postionOnTap = position;
-  //       // _textLugar.text = transformAddress(placemarks[0].street!);
-
-  //       String id = 'hammerMaker';
-  //       final markerId = MarkerId(id);
-
-  //       final marker = Marker(
-  //         icon:
-  //             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-  //         markerId: markerId,
-  //         position: position,
-  //         zIndex: 2,
-  //         anchor: const Offset(0.5, 1),
-  //         onTap: () {
-  //           _markersController.sink.add(id);
-  //           latlon1 = position;
-  //         },
-  //         draggable: true,
-  //         onDragEnd: (newPosition) {
-  //           //print("el marcador se puso en las longitudes $newPosition");
-  //           print("latitud ");
-
-  //           position = newPosition;
-
-  //           print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
-  //         },
-  //       );
-
-  //       _markers[markerId] = marker;
-  //     });
-  //   }
-  // }
-
   Set<Polygon> myPolygon(
     List listaGeometry,
   ) {
@@ -787,6 +730,24 @@ class _Map1State extends State<Map1> {
               polygon_seleccion(listaGeometry[0][i]);
             },
           );
+          setState(() {
+            bool bandera = false;
+            Set<Polygon> temporalListaPolygons2 = new Set();
+            var contador = 0;
+            
+
+            if (_polygonSet.last.polygonId == const PolygonId("seleccion")) {
+              for (var element in _polygonSet) {
+                if (contador < _polygonSet.length - 1) {
+                  temporalListaPolygons2.add(element.clone());
+                }
+                contador++;
+              }
+              _polygonSet.clear();
+              _polygonSet.addAll(temporalListaPolygons2);
+            }
+
+          });
         },
       );
 
