@@ -13,6 +13,7 @@ import 'package:kitit/resourses/exceReader.dart';
 import 'package:kitit/service/MySQLConnection.dart';
 import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:kitit/service/google_places.dart';
 import 'package:kitit/widgets/modal_window.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
 import 'package:kitit/widgets/widow_map.dart';
@@ -114,6 +115,9 @@ class _Map1State extends State<Map1> {
     }
 
     void onTap(LatLng position) async {
+      var a =
+          await GooglePlace.get_places_all("tacos", "20.687904", "-103.388497");
+      print(a);
       setState(() {
         postionOnTap = LatLng(position.latitude, position.longitude);
       });
