@@ -28,7 +28,7 @@ class Map1 extends StatefulWidget {
 }
 
 class _Map1State extends State<Map1> {
-  //variables de google maps and polygons
+//variables de google maps and polygons
   Set<Polygon> _polygonSet = new Set();
   Set<Polygon> _polygonSetDisable = new Set();
   CustomInfoWindowController _customInfoWindowController =
@@ -41,7 +41,7 @@ class _Map1State extends State<Map1> {
   Set<Marker> get markers => _markers.values.toSet();
   final _markersController = StreamController<String>.broadcast();
 
-  //controladores en general y banderas
+//controladores en general y banderas
   Stream<String> get onMarkerTap => _markersController.stream;
   @override
   final TextEditingController _textLugar = TextEditingController();
@@ -115,9 +115,6 @@ class _Map1State extends State<Map1> {
     }
 
     void onTap(LatLng position) async {
-      var a =
-          await GooglePlace.get_places_all("tacos", "20.687904", "-103.388497");
-      print(a);
       setState(() {
         postionOnTap = LatLng(position.latitude, position.longitude);
       });
@@ -447,20 +444,20 @@ class _Map1State extends State<Map1> {
                       animatedIcon: AnimatedIcons.menu_close,
                       spaceBetweenChildren: 10,
                       children: [
-                        // SpeedDialChild(
-                        //     backgroundColor: DesingColors.yellow,
-                        //     onTap: () {
-                        //       setState(
-                        //         () {
-                        //           if (hammerIsTaped) {
-                        //             _markers
-                        //                 .remove(const MarkerId('hammerMaker'));
-                        //           }
-                        //           hammerIsTaped = !hammerIsTaped;
-                        //         },
-                        //       );
-                        //     },
-                        //     child: const Icon(Icons.gavel_rounded)),
+// SpeedDialChild(
+//     backgroundColor: DesingColors.yellow,
+//     onTap: () {
+//       setState(
+//         () {
+//           if (hammerIsTaped) {
+//             _markers
+//                 .remove(const MarkerId('hammerMaker'));
+//           }
+//           hammerIsTaped = !hammerIsTaped;
+//         },
+//       );
+//     },
+//     child: const Icon(Icons.gavel_rounded)),
                         SpeedDialChild(
                           backgroundColor: DesingColors.yellow,
                           child: const Icon(Icons.route_rounded),
@@ -480,7 +477,7 @@ class _Map1State extends State<Map1> {
                                                 'Escribe tu actividad economica',
                                                 style: TextStyle(fontSize: 18),
                                               )),
-                                              /////////////////
+
                                               content: Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 5),
@@ -490,39 +487,42 @@ class _Map1State extends State<Map1> {
                                                           color: DesingColors
                                                               .yellow,
                                                           child: IconButton(
-                                                              onPressed:
-                                                                  () async {
-                                                                var isEconomyActivity =
-                                                                    await datosDenue
-                                                                        .isEconomyActivity(
-                                                                            actividadEconomica.value);
+                                                            onPressed:
+                                                                () async {
+                                                              var isEconomyActivity =
+                                                                  await datosDenue
+                                                                      .isEconomyActivity(
+                                                                          actividadEconomica
+                                                                              .value);
 
-                                                                if (isEconomyActivity) {
-                                                                  print(
-                                                                      'ESTOY HABILITANDO EL BOTOOOOOON');
-                                                                  buttonDisable
-                                                                          .value =
-                                                                      false;
-                                                                  print(buttonDisable
-                                                                      .value);
-                                                                } else {
-                                                                  print(
-                                                                      'ESTA MAL ASI QUE DESABILITAMOS');
-                                                                  buttonDisable
-                                                                          .value =
-                                                                      true;
-                                                                }
-                                                                setState(
-                                                                  () {},
-                                                                );
-                                                              },
-                                                              icon: const Icon(
-                                                                Icons
-                                                                    .search_rounded,
-                                                                color:
-                                                                    DesingColors
-                                                                        .dark,
-                                                              )),
+                                                              if (isEconomyActivity) {
+                                                                print(
+                                                                    'ESTOY HABILITANDO EL BOTOOOOOON');
+                                                                buttonDisable
+                                                                        .value =
+                                                                    false;
+                                                                print(
+                                                                    buttonDisable
+                                                                        .value);
+                                                              } else {
+                                                                print(
+                                                                    'ESTA MAL ASI QUE DESABILITAMOS');
+                                                                buttonDisable
+                                                                        .value =
+                                                                    true;
+                                                              }
+                                                              setState(
+                                                                () {},
+                                                              );
+                                                            },
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .search_rounded,
+                                                              color:
+                                                                  DesingColors
+                                                                      .dark,
+                                                            ),
+                                                          ),
                                                         ),
                                                         errorText: actividadEconomica.value !=
                                                                     '' &&
@@ -540,7 +540,7 @@ class _Map1State extends State<Map1> {
                                                           value;
                                                     }),
                                               ),
-                                              ////////////////
+////////////////
                                               actions: [
                                                 Center(
                                                   child: ElevatedButton(
@@ -554,17 +554,14 @@ class _Map1State extends State<Map1> {
                                                                   true
                                                               ? null
                                                               : () async {
-                                                                  final icon = await BitmapDescriptor.fromAssetImage(
-                                                                      const ImageConfiguration(
-                                                                          //size: Size(20, 20),
-                                                                          ),
-                                                                      'lib/_img/amarilloyblanco(1).png');
+                                                                  final icon =
+                                                                      await BitmapDescriptor
+                                                                          .fromAssetImage(
+                                                                    const ImageConfiguration(),
+                                                                    'lib/_img/amarilloyblanco(1).png',
+                                                                  );
                                                                   int cont = 0;
-                                                                  modal_window
-                                                                      modalWindow =
-                                                                      modal_window(
-                                                                          context,
-                                                                          13);
+
                                                                   List<Map> list = await datosDenue.fetchPost(
                                                                       actividadEconomica
                                                                           .value,
@@ -574,6 +571,43 @@ class _Map1State extends State<Map1> {
                                                                       postionOnTap!
                                                                           .longitude
                                                                           .toString());
+                                                                  //CODE GOOGLE PLACES ................................
+                                                                  List<Map> lista_places = await GooglePlace.get_places_all(
+                                                                      actividadEconomica
+                                                                          .value,
+                                                                      postionOnTap!
+                                                                          .latitude
+                                                                          .toString(),
+                                                                      postionOnTap!
+                                                                          .longitude
+                                                                          .toString());
+                                                                  int contador_places =
+                                                                      0;
+                                                                  for (var element
+                                                                      in lista_places) {
+                                                                    print(
+                                                                        "____________________________-----------------------");
+                                                                    print(
+                                                                        element);
+                                                                    String id =
+                                                                        "Place $contador_places";
+                                                                    Marker
+                                                                        marker_place =
+                                                                        GooglePlace.marker_window_places(
+                                                                            id,
+                                                                            LatLng(
+                                                                              element["lat"],
+                                                                              element["lon"],
+                                                                            ),
+                                                                            element["nombre"],
+                                                                            _customInfoWindowController,
+                                                                            icon);
+
+                                                                    _markers[marker_place
+                                                                            .markerId] =
+                                                                        marker_place;
+                                                                    contador_places++;
+                                                                  }
 
                                                                   for (var element
                                                                       in list) {
@@ -620,11 +654,6 @@ class _Map1State extends State<Map1> {
                                                                           const Offset(
                                                                               0.5,
                                                                               1),
-                                                                      // infoWindow: InfoWindow(
-                                                                      //     title:
-                                                                      //         name,
-                                                                      //     snippet:
-                                                                      //         descrip),
                                                                       onTap:
                                                                           () {
                                                                         buttonAE.value =
@@ -634,7 +663,6 @@ class _Map1State extends State<Map1> {
                                                                             Container(
                                                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                                                                               decoration: const BoxDecoration(
-                                                                                // border: Border.all(width: 2,color: Colors.black),
                                                                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                                                                 color: DesingColors.nuse,
                                                                               ),
@@ -662,7 +690,6 @@ class _Map1State extends State<Map1> {
                                                                             position);
                                                                         update();
                                                                       },
-
                                                                       draggable:
                                                                           false,
                                                                     );
@@ -674,9 +701,6 @@ class _Map1State extends State<Map1> {
                                                                           marker;
                                                                     });
                                                                   }
-                                                                  print(
-                                                                      _markers);
-
                                                                   // ignore: use_build_context_synchronously
                                                                   Navigator.pop(
                                                                       context);
@@ -699,61 +723,6 @@ class _Map1State extends State<Map1> {
       ),
     );
   }
-
-  // void onTap(LatLng position) async {
-  //   List<Placemark> placemarks =
-  //       await placemarkFromCoordinates(position.latitude, position.longitude);
-
-  //   print('ESTAS TAPEANDO EL MAPA');
-  //   final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
-
-  //   if (!hasPaintedAZone) {
-  //     print(
-  //         'PINTANDO POLIGONOS______________________________________________________________________');
-
-  //     print(res_data);
-  //     setState(() {
-  //       hasPaintedAZone = true;
-  //       myPolygon(resultados);
-
-  //     });
-  //   }
-
-  //   if (hammerIsTaped) {
-  //     print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
-  //     setState(() {
-  //       postionOnTap = position;
-  //       // _textLugar.text = transformAddress(placemarks[0].street!);
-
-  //       String id = 'hammerMaker';
-  //       final markerId = MarkerId(id);
-
-  //       final marker = Marker(
-  //         icon:
-  //             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-  //         markerId: markerId,
-  //         position: position,
-  //         zIndex: 2,
-  //         anchor: const Offset(0.5, 1),
-  //         onTap: () {
-  //           _markersController.sink.add(id);
-  //           latlon1 = position;
-  //         },
-  //         draggable: true,
-  //         onDragEnd: (newPosition) {
-  //           //print("el marcador se puso en las longitudes $newPosition");
-  //           print("latitud ");
-
-  //           position = newPosition;
-
-  //           print("POSI EN LA QUE PUSISTE EL MARCADOR WEY $position");
-  //         },
-  //       );
-
-  //       _markers[markerId] = marker;
-  //     });
-  //   }
-  // }
 
   Set<Polygon> myPolygon(
     List listaGeometry,
