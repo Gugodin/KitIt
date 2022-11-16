@@ -468,249 +468,246 @@ class _Map1State extends State<Map1> {
                             onTap: () {
                               showDialog(
                                   context: context,
-                                  builder:
-                                      (context) => StatefulBuilder(builder:
-                                              (context, StateSetter setState) {
-                                            return AlertDialog(
-                                              title: const Center(
-                                                  child: Text(
-                                                'Escribe tu actividad economica',
-                                                style: TextStyle(fontSize: 18),
-                                              )),
+                                  builder: (context) => StatefulBuilder(builder:
+                                          (context, StateSetter setState) {
+                                        return AlertDialog(
+                                          title: const Center(
+                                              child: Text(
+                                            'Escribe tu actividad economica',
+                                            style: TextStyle(fontSize: 18),
+                                          )),
 
-                                              content: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5),
-                                                child: TextField(
-                                                    decoration: InputDecoration(
-                                                        suffixIcon: Container(
-                                                          color: DesingColors
-                                                              .yellow,
-                                                          child: IconButton(
-                                                            onPressed:
-                                                                () async {
-                                                              var isEconomyActivity =
-                                                                  await datosDenue
-                                                                      .isEconomyActivity(
-                                                                          actividadEconomica
-                                                                              .value);
+                                          content: Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 5),
+                                            child: TextField(
+                                                decoration: InputDecoration(
+                                                    suffixIcon: Container(
+                                                      color:
+                                                          DesingColors.yellow,
+                                                      child: IconButton(
+                                                        onPressed: () async {
+                                                          var isEconomyActivity =
+                                                              await datosDenue
+                                                                  .isEconomyActivity(
+                                                                      actividadEconomica
+                                                                          .value);
 
-                                                              if (isEconomyActivity) {
-                                                                print(
-                                                                    'ESTOY HABILITANDO EL BOTOOOOOON');
-                                                                buttonDisable
-                                                                        .value =
-                                                                    false;
-                                                                print(
-                                                                    buttonDisable
-                                                                        .value);
-                                                              } else {
-                                                                print(
-                                                                    'ESTA MAL ASI QUE DESABILITAMOS');
-                                                                buttonDisable
-                                                                        .value =
-                                                                    true;
-                                                              }
-                                                              setState(
-                                                                () {},
-                                                              );
-                                                            },
-                                                            icon: const Icon(
-                                                              Icons
-                                                                  .search_rounded,
-                                                              color:
-                                                                  DesingColors
-                                                                      .dark,
-                                                            ),
-                                                          ),
+                                                          if (isEconomyActivity) {
+                                                            print(
+                                                                'ESTOY HABILITANDO EL BOTOOOOOON');
+                                                            buttonDisable
+                                                                .value = false;
+                                                            print(buttonDisable
+                                                                .value);
+                                                          } else {
+                                                            print(
+                                                                'ESTA MAL ASI QUE DESABILITAMOS');
+                                                            buttonDisable
+                                                                .value = true;
+                                                          }
+                                                          setState(
+                                                            () {},
+                                                          );
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons.search_rounded,
+                                                          color:
+                                                              DesingColors.dark,
                                                         ),
-                                                        errorText: actividadEconomica.value !=
-                                                                    '' &&
-                                                                buttonDisable
-                                                                        .value ==
-                                                                    true
-                                                            ? 'Escribe una actividad economica valida por favor'
-                                                            : null,
-                                                        hintText:
-                                                            'Ejemplo: Abarrotes'),
-                                                    controller:
-                                                        _textActividadEconomica,
-                                                    onChanged: (value) {
-                                                      actividadEconomica.value =
-                                                          value;
-                                                    }),
-                                              ),
+                                                      ),
+                                                    ),
+                                                    errorText: actividadEconomica
+                                                                    .value !=
+                                                                '' &&
+                                                            buttonDisable
+                                                                    .value ==
+                                                                true
+                                                        ? 'Escribe una actividad economica valida por favor'
+                                                        : null,
+                                                    hintText:
+                                                        'Ejemplo: Abarrotes'),
+                                                controller:
+                                                    _textActividadEconomica,
+                                                onChanged: (value) {
+                                                  actividadEconomica.value =
+                                                      value;
+                                                }),
+                                          ),
 ////////////////
-                                              actions: [
-                                                Center(
-                                                  child: ElevatedButton(
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                              primary:
-                                                                  DesingColors
-                                                                      .dark),
-                                                      onPressed:
-                                                          buttonDisable.value ==
-                                                                  true
-                                                              ? null
-                                                              : () async {
-                                                                  final icon =
-                                                                      await BitmapDescriptor
-                                                                          .fromAssetImage(
-                                                                    const ImageConfiguration(),
-                                                                    'lib/_img/amarilloyblanco(1).png',
-                                                                  );
-                                                                  int cont = 0;
+                                          actions: [
+                                            Center(
+                                              child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          primary: DesingColors
+                                                              .dark),
+                                                  onPressed:
+                                                      buttonDisable.value ==
+                                                              true
+                                                          ? null
+                                                          : () async {
+                                                              final icon =
+                                                                  await BitmapDescriptor
+                                                                      .fromAssetImage(
+                                                                const ImageConfiguration(),
+                                                                'lib/_img/amarilloyblanco(1).png',
+                                                              );
+                                                              int cont = 0;
 
-                                                                  List<Map> list = await datosDenue.fetchPost(
-                                                                      actividadEconomica
-                                                                          .value,
-                                                                      postionOnTap!
-                                                                          .latitude
-                                                                          .toString(),
-                                                                      postionOnTap!
-                                                                          .longitude
-                                                                          .toString());
-                                                                  //CODE GOOGLE PLACES ................................
-                                                                  List<Map> lista_places = await GooglePlace.get_places_all(
-                                                                      actividadEconomica
-                                                                          .value,
-                                                                      postionOnTap!
-                                                                          .latitude
-                                                                          .toString(),
-                                                                      postionOnTap!
-                                                                          .longitude
-                                                                          .toString());
-                                                                  int contador_places =
-                                                                      0;
-                                                                  for (var element
-                                                                      in lista_places) {
-                                                                    print(
-                                                                        "____________________________-----------------------");
-                                                                    print(
-                                                                        element);
-                                                                    String id =
-                                                                        "Place $contador_places";
-                                                                    Marker
-                                                                        marker_place =
-                                                                        GooglePlace.marker_window_places(
-                                                                            id,
-                                                                            LatLng(
-                                                                              element["lat"],
-                                                                              element["lon"],
-                                                                            ),
-                                                                            element["nombre"],
-                                                                            _customInfoWindowController,
-                                                                            icon);
-
-                                                                    _markers[marker_place
-                                                                            .markerId] =
-                                                                        marker_place;
-                                                                    contador_places++;
-                                                                  }
-
-                                                                  for (var element
-                                                                      in list) {
-                                                                    print(
-                                                                        'Hola este es ${element}');
-
-                                                                    String
-                                                                        name =
-                                                                        element[
-                                                                            'nombre'];
-                                                                    String
-                                                                        descrip =
-                                                                        element[
-                                                                            'descripcion'];
-
-                                                                    double lat =
-                                                                        double.parse(
-                                                                            element['lat']);
-
-                                                                    double lon =
-                                                                        double.parse(
-                                                                            element['lon']);
-
-                                                                    LatLng
-                                                                        position =
+                                                              List<Map> list = await datosDenue.fetchPost(
+                                                                  actividadEconomica
+                                                                      .value,
+                                                                  postionOnTap!
+                                                                      .latitude
+                                                                      .toString(),
+                                                                  postionOnTap!
+                                                                      .longitude
+                                                                      .toString());
+                                                              //CODE GOOGLE PLACES ................................
+                                                              List<Map> lista_places = await GooglePlace.get_places_all(
+                                                                  actividadEconomica
+                                                                      .value,
+                                                                  postionOnTap!
+                                                                      .latitude
+                                                                      .toString(),
+                                                                  postionOnTap!
+                                                                      .longitude
+                                                                      .toString());
+                                                              int contador_places =
+                                                                  0;
+                                                              for (var element
+                                                                  in lista_places) {
+                                                                print(
+                                                                    "____________________________-----------------------");
+                                                                print(element);
+                                                                String id =
+                                                                    "Place $contador_places";
+                                                                Marker
+                                                                    marker_place =
+                                                                    GooglePlace.marker_window_places(
+                                                                        id,
                                                                         LatLng(
-                                                                            lat,
-                                                                            lon);
+                                                                          element[
+                                                                              "lat"],
+                                                                          element[
+                                                                              "lon"],
+                                                                        ),
+                                                                        element["nombre"],
+                                                                        _customInfoWindowController,
+                                                                        icon);
 
-                                                                    var markerId =
-                                                                        MarkerId(
-                                                                            'rivals$cont');
-                                                                    cont++;
-                                                                    final marker =
-                                                                        Marker(
-                                                                      icon:
-                                                                          icon,
-                                                                      markerId:
-                                                                          markerId,
-                                                                      position:
-                                                                          position,
-                                                                      zIndex: 2,
-                                                                      anchor:
-                                                                          const Offset(
-                                                                              0.5,
-                                                                              1),
-                                                                      onTap:
-                                                                          () {
-                                                                        buttonAE.value =
-                                                                            true;
+                                                                _markers[marker_place
+                                                                        .markerId] =
+                                                                    marker_place;
+                                                                contador_places++;
+                                                              }
 
-                                                                        _customInfoWindowController.addInfoWindow!(
-                                                                            Container(
-                                                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                                                                              decoration: const BoxDecoration(
-                                                                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                                                color: DesingColors.nuse,
+                                                              for (var element
+                                                                  in list) {
+                                                                print(
+                                                                    'Hola este es ${element}');
+
+                                                                String name =
+                                                                    element[
+                                                                        'nombre'];
+                                                                String descrip =
+                                                                    element[
+                                                                        'descripcion'];
+
+                                                                double lat =
+                                                                    double.parse(
+                                                                        element[
+                                                                            'lat']);
+
+                                                                double lon =
+                                                                    double.parse(
+                                                                        element[
+                                                                            'lon']);
+
+                                                                LatLng
+                                                                    position =
+                                                                    LatLng(lat,
+                                                                        lon);
+
+                                                                var markerId =
+                                                                    MarkerId(
+                                                                        'rivals$cont');
+                                                                cont++;
+                                                                final marker =
+                                                                    Marker(
+                                                                  icon: icon,
+                                                                  markerId:
+                                                                      markerId,
+                                                                  position:
+                                                                      position,
+                                                                  zIndex: 2,
+                                                                  anchor:
+                                                                      const Offset(
+                                                                          0.5,
+                                                                          1),
+                                                                  onTap: () {
+                                                                    buttonAE.value =
+                                                                        true;
+
+                                                                    _customInfoWindowController
+                                                                            .addInfoWindow!(
+                                                                        Container(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                              horizontal: 10,
+                                                                              vertical: 15),
+                                                                          decoration:
+                                                                              const BoxDecoration(
+                                                                            borderRadius:
+                                                                                BorderRadius.all(Radius.circular(10)),
+                                                                            color:
+                                                                                DesingColors.nuse,
+                                                                          ),
+                                                                          child:
+                                                                              Column(
+                                                                            children: [
+                                                                              Center(
+                                                                                  child: Text(
+                                                                                name,
+                                                                                textAlign: TextAlign.center,
+                                                                                style: const TextStyle(fontSize: 15, color: Colors.white),
+                                                                              )),
+                                                                              const Divider(
+                                                                                color: Colors.white,
+                                                                                thickness: 2,
                                                                               ),
-                                                                              child: Column(
-                                                                                children: [
-                                                                                  Center(
-                                                                                      child: Text(
-                                                                                    name,
-                                                                                    textAlign: TextAlign.center,
-                                                                                    style: const TextStyle(fontSize: 15, color: Colors.white),
-                                                                                  )),
-                                                                                  const Divider(
+                                                                              Text('$descrip.',
+                                                                                  style: const TextStyle(
+                                                                                    fontSize: 13,
                                                                                     color: Colors.white,
-                                                                                    thickness: 2,
                                                                                   ),
-                                                                                  Text('$descrip.',
-                                                                                      style: const TextStyle(
-                                                                                        fontSize: 13,
-                                                                                        color: Colors.white,
-                                                                                      ),
-                                                                                      textAlign: TextAlign.justify),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                            position);
-                                                                        update();
-                                                                      },
-                                                                      draggable:
-                                                                          false,
-                                                                    );
+                                                                                  textAlign: TextAlign.justify),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        position);
+                                                                    update();
+                                                                  },
+                                                                  draggable:
+                                                                      false,
+                                                                );
 
-                                                                    setState(
-                                                                        () {
-                                                                      _markers[
-                                                                              markerId] =
-                                                                          marker;
-                                                                    });
-                                                                  }
-                                                                  // ignore: use_build_context_synchronously
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                      child: const Text(
-                                                          'Siguiente')),
-                                                ),
-                                              ],
-                                            );
-                                          }));
+                                                                setState(() {
+                                                                  _markers[
+                                                                          markerId] =
+                                                                      marker;
+                                                                });
+                                                              }
+                                                              // ignore: use_build_context_synchronously
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                  child:
+                                                      const Text('Siguiente')),
+                                            ),
+                                          ],
+                                        );
+                                      }));
                             }),
                       ],
                     );
@@ -758,6 +755,21 @@ class _Map1State extends State<Map1> {
             () {
               window_visiviliti = true;
               polygon_seleccion(listaGeometry[0][i]);
+
+              bool bandera = false;
+              Set<Polygon> temporalListaPolygons2 = new Set();
+              var contador = 0;
+
+              if (_polygonSet.last.polygonId == const PolygonId("seleccion")) {
+                for (var element in _polygonSet) {
+                  if (contador < _polygonSet.length - 1) {
+                    temporalListaPolygons2.add(element.clone());
+                  }
+                  contador++;
+                }
+                _polygonSet.clear();
+                _polygonSet.addAll(temporalListaPolygons2);
+              }
             },
           );
         },
