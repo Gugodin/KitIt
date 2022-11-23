@@ -298,15 +298,25 @@ class _Map1State extends State<Map1> {
                         onChanged: (value) {
                           direccion.value = value;
                         },
-                        decoration: const InputDecoration(
-                            hoverColor: Colors.black,
-                            labelText: "Ingrese su direccion",
-                            labelStyle: TextStyle(color: Colors.black),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    style: BorderStyle.none, width: 0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0)))),
+                        decoration: InputDecoration(
+                          hoverColor: Colors.black,
+                          labelText: "Ingrese su direccion",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: const OutlineInputBorder(
+                            borderSide:
+                                BorderSide(style: BorderStyle.none, width: 0),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: _textLugar.clear,
+                            icon: Icon(
+                              Icons.clear,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     ElevatedButton(
@@ -592,12 +602,15 @@ class _Map1State extends State<Map1> {
                               ElevatedButton.styleFrom(primary: Colors.black),
                           onPressed: () async {
                             var res_data =
-            await MySQLConnector.getMarkersbyCP(postalCode);
+                                await MySQLConnector.getMarkersbyCP(postalCode);
 
-        MarkersCom markerscom = MarkersCom(res_data);
-        // ignore: use_build_context_synchronously
-        final markersComers = await markerscom.printMarkersComers(
-            _customInfoWindowController, context, deviceData);
+                            MarkersCom markerscom = MarkersCom(res_data);
+                            // ignore: use_build_context_synchronously
+                            final markersComers =
+                                await markerscom.printMarkersComers(
+                                    _customInfoWindowController,
+                                    context,
+                                    deviceData);
 
                             setState(() {
                               for (var element in clasification.keys) {
@@ -607,11 +620,10 @@ class _Map1State extends State<Map1> {
 
                               // REGRESAR LOS MARKERS NORMALES
                               _markers.clear();
-                              
-                              for (Marker element in markersComers) {
-                              _markers[element.markerId] = element;
-                            }
 
+                              for (Marker element in markersComers) {
+                                _markers[element.markerId] = element;
+                              }
                             });
                           },
                           child: const Icon(Icons.filter_list_off_rounded)),
