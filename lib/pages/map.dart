@@ -61,6 +61,9 @@ class _Map1State extends State<Map1> {
   ValueNotifier<List<int>> totalHabitantes =
       ValueNotifier<List<int>>([0, 0, 0]);
   bool hasChangedFilter = false;
+
+  final textFieldFocus = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     var deviceData = MediaQuery.of(context);
@@ -115,6 +118,7 @@ class _Map1State extends State<Map1> {
     }
 
     void onTap(LatLng position) async {
+      textFieldFocus.unfocus();
       setState(() {
         postionOnTap = LatLng(position.latitude, position.longitude);
       });
@@ -294,6 +298,7 @@ class _Map1State extends State<Map1> {
                     SizedBox(
                       width: device_data.size.width * 0.7,
                       child: TextField(
+                        focusNode: textFieldFocus,
                         controller: _textLugar,
                         onChanged: (value) {
                           direccion.value = value;
@@ -301,7 +306,7 @@ class _Map1State extends State<Map1> {
                         decoration: InputDecoration(
                           hoverColor: Colors.black,
                           labelText: "Ingrese su direccion",
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: const TextStyle(color: Colors.black),
                           border: const OutlineInputBorder(
                             borderSide:
                                 BorderSide(style: BorderStyle.none, width: 0),
@@ -311,7 +316,7 @@ class _Map1State extends State<Map1> {
                           ),
                           suffixIcon: IconButton(
                             onPressed: _textLugar.clear,
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.clear,
                               color: Colors.grey,
                             ),
@@ -323,7 +328,8 @@ class _Map1State extends State<Map1> {
                       style:
                           ElevatedButton.styleFrom(primary: DesingColors.dark),
                       onPressed: () async {
-                        // print('ENTRE AL ZOOM');
+                        textFieldFocus.unfocus();
+              
 
                         if (_textLugar.text == '') {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -331,9 +337,6 @@ class _Map1State extends State<Map1> {
                                   content: Text(
                                       'Escribe o selecciona una zona por favor')));
                         } else {
-                          print('Direccion: ');
-                          print(direccion.value);
-
                           final locations = await getLocation();
 
                           LatLng latLngPosition = LatLng(
@@ -377,8 +380,8 @@ class _Map1State extends State<Map1> {
 
                             postionOnTap = latLngPosition;
 
-                            hasPaintedAZone = true;
-                            myPolygon(resultados);
+                            // hasPaintedAZone = true;
+                            // myPolygon(resultados);
 
                             for (Marker element in markersComers) {
                               _markers[element.markerId] = element;
@@ -761,6 +764,7 @@ class _Map1State extends State<Map1> {
                             backgroundColor: DesingColors.yellow,
                             child: const Icon(Icons.storefront),
                             onTap: () {
+                              
                               showDialog(
                                   context: context,
                                   builder: (context) => StatefulBuilder(builder:
