@@ -305,7 +305,7 @@ class _Map1State extends State<Map1> {
                         },
                         decoration: InputDecoration(
                           hoverColor: Colors.black,
-                          labelText: "Ingrese su direccion",
+                          labelText: "Ingrese su dirección",
                           labelStyle: const TextStyle(color: Colors.black),
                           border: const OutlineInputBorder(
                             borderSide:
@@ -329,7 +329,9 @@ class _Map1State extends State<Map1> {
                           ElevatedButton.styleFrom(primary: DesingColors.dark),
                       onPressed: () async {
                         textFieldFocus.unfocus();
-              
+                        _markers.clear();
+                        _polygonSet.clear();
+                        _polygonSetDisable.clear();
 
                         if (_textLugar.text == '') {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -764,7 +766,6 @@ class _Map1State extends State<Map1> {
                             backgroundColor: DesingColors.yellow,
                             child: const Icon(Icons.storefront),
                             onTap: () {
-                              
                               showDialog(
                                   context: context,
                                   builder: (context) => StatefulBuilder(builder:
@@ -793,15 +794,11 @@ class _Map1State extends State<Map1> {
                                                                           .value);
 
                                                           if (isEconomyActivity) {
-                                                            print(
-                                                                'ESTOY HABILITANDO EL BOTOOOOOON');
                                                             buttonDisable
                                                                 .value = false;
                                                             print(buttonDisable
                                                                 .value);
                                                           } else {
-                                                            print(
-                                                                'ESTA MAL ASI QUE DESABILITAMOS');
                                                             buttonDisable
                                                                 .value = true;
                                                           }
@@ -875,26 +872,26 @@ class _Map1State extends State<Map1> {
                                                                       .toString());
                                                               int contador_places =
                                                                   0;
+
                                                               for (var element
                                                                   in lista_places) {
-                                                                print(
-                                                                    "____________________________-----------------------");
-                                                                print(element);
                                                                 String id =
                                                                     "Place $contador_places";
                                                                 Marker
                                                                     marker_place =
-                                                                    GooglePlace.marker_window_places(
-                                                                        id,
-                                                                        LatLng(
-                                                                          element[
-                                                                              "lat"],
-                                                                          element[
-                                                                              "lon"],
-                                                                        ),
-                                                                        element["nombre"],
-                                                                        _customInfoWindowController,
-                                                                        icon);
+                                                                    await GooglePlace
+                                                                        .marker_window_places(
+                                                                  id,
+                                                                  LatLng(
+                                                                    element[
+                                                                        "lat"],
+                                                                    element[
+                                                                        "lon"],
+                                                                  ),
+                                                                  element[
+                                                                      "nombre"],
+                                                                  _customInfoWindowController,
+                                                                );
 
                                                                 _markers[marker_place
                                                                         .markerId] =
@@ -904,9 +901,6 @@ class _Map1State extends State<Map1> {
 
                                                               for (var element
                                                                   in list) {
-                                                                print(
-                                                                    'Hola este es ${element}');
-
                                                                 String name =
                                                                     element[
                                                                         'nombre'];
