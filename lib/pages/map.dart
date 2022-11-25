@@ -130,84 +130,88 @@ class _Map1State extends State<Map1> {
 
       print('ESTAS TAPEANDO EL MAPA');
       final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
-
-      for (Map element in resultados[2]) {
-        totalHabitantes.value[0] += int.parse(element['t']);
-        totalHabitantes.value[1] += int.parse(element['m']);
-        totalHabitantes.value[2] += int.parse(element['f']);
-      }
-
-      if (!hasPaintedAZone) {
-        print(
-            'PINTANDO POLIGONOS______________________________________________________________________');
-
-        var res_data =
-            await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
-        setState(() {
-          postalCode = placemarks[0].postalCode;
-        });
-        MarkersCom markerscom = MarkersCom(res_data);
-        // ignore: use_build_context_synchronously
-        final markersComers = await markerscom.printMarkersComers(
-            _customInfoWindowController, context, deviceData);
-        setState(() {
-          hasPaintedAZone = true;
-          myPolygon(resultados);
-
-          for (Marker element in markersComers) {
-            _markers[element.markerId] = element;
-          }
-          // print(
-          //     "________________________________________________________________________________ Hola soy marker nuevo");
-          // print(_markers.length);
-          // print(_markers);
-        });
-      }
-
-      if (hammerIsTaped) {
-        print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
-        setState(() {
-          postionOnTap = position;
-
-          // _textLugar.text = transformAddress(placemarks[0].street!);
-
-          String id = 'hammerMaker';
-          final markerId = MarkerId(id);
-
-          final marker = Marker(
-            icon: icon,
-            markerId: markerId,
-            position: position,
-            zIndex: 2,
-            anchor: const Offset(0.5, 1),
-            onTap: () {
-              _markersController.sink.add(id);
-              latlon1 = position;
-            },
-            draggable: true,
-            onDragEnd: (newPosition) {
-              //print("el marcador se puso en las longitudes $newPosition");
-              print("latitud ");
-
-              position = newPosition;
-            },
-          );
-
-          _markers[markerId] = marker;
-        });
-        //AQUI ES DONDE LLAMAREMOS LA VENTANA MODAL
-        modal_window modal = modal_window(context, 17);
-
-        List<double> coordsUTM = await ExcelReader.modifyLatAndLon(
-            position.latitude, position.longitude);
-
-        final response = await data_predio_cordenada(coordsUTM);
-
-        bool bandVenta = true;
-        if (response.length == 0) {
-          bandVenta = false;
+      print(
+          "Poligonos pitnados on tap ________________________________________________________________________");
+      if (resultados[0].length > 0) {
+        for (Map element in resultados[2]) {
+          totalHabitantes.value[0] += int.parse(element['t']);
+          totalHabitantes.value[1] += int.parse(element['m']);
+          totalHabitantes.value[2] += int.parse(element['f']);
         }
-        modal.venta_modal_info(response, deviceData, bandVenta);
+
+        if (!hasPaintedAZone) {
+          var res_data =
+              await MySQLConnector.getMarkersbyCP(placemarks[0].postalCode);
+
+          setState(() {
+            postalCode = placemarks[0].postalCode;
+          });
+          MarkersCom markerscom = MarkersCom(res_data);
+          // ignore: use_build_context_synchronously
+          final markersComers = await markerscom.printMarkersComers(
+              _customInfoWindowController, context, deviceData);
+          setState(() {
+            hasPaintedAZone = true;
+            myPolygon(resultados);
+
+            for (Marker element in markersComers) {
+              _markers[element.markerId] = element;
+            }
+          });
+        }
+
+        if (hammerIsTaped) {
+          print('ESTAS TAPEANDO EL MAPA CON EL MARTILLO');
+          setState(() {
+            postionOnTap = position;
+
+            // _textLugar.text = transformAddress(placemarks[0].street!);
+
+            String id = 'hammerMaker';
+            final markerId = MarkerId(id);
+
+            final marker = Marker(
+              icon: icon,
+              markerId: markerId,
+              position: position,
+              zIndex: 2,
+              anchor: const Offset(0.5, 1),
+              onTap: () {
+                _markersController.sink.add(id);
+                latlon1 = position;
+              },
+              draggable: true,
+              onDragEnd: (newPosition) {
+                //print("el marcador se puso en las longitudes $newPosition");
+                print("latitud ");
+
+                position = newPosition;
+              },
+            );
+
+            _markers[markerId] = marker;
+          });
+          //AQUI ES DONDE LLAMAREMOS LA VENTANA MODAL
+          modal_window modal = modal_window(context, 17);
+
+          List<double> coordsUTM = await ExcelReader.modifyLatAndLon(
+              position.latitude, position.longitude);
+
+          final response = await data_predio_cordenada(coordsUTM);
+
+          bool bandVenta = true;
+          if (response.length == 0) {
+            bandVenta = false;
+          }
+          modal.venta_modal_info(response, deviceData, bandVenta);
+        }
+      } else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se econtraron datos en el lugar seleccionado'),
+          ),
+        );
       }
 
       // POR SI QUIERES ALGUN OTRO IF
