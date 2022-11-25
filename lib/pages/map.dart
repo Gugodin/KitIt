@@ -63,6 +63,10 @@ class _Map1State extends State<Map1> {
   bool hasChangedFilter = false;
 
   final textFieldFocus = FocusNode();
+  final textFieldFocus_actividad = FocusNode();
+
+  int count_markers = 0;
+  bool marker_llenos = false;
 
   @override
   Widget build(BuildContext context) {
@@ -616,6 +620,7 @@ class _Map1State extends State<Map1> {
                             MarkersCom markerscom = MarkersCom(res_data);
                             // ignore: use_build_context_synchronously
                             final markersComers =
+                                // ignore: use_build_context_synchronously
                                 await markerscom.printMarkersComers(
                                     _customInfoWindowController,
                                     context,
@@ -676,6 +681,29 @@ class _Map1State extends State<Map1> {
                   );
                 } else {
                   return SizedBox();
+                }
+              }),
+              Builder(builder: (context) {
+                if (count_markers > 0) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.5),
+                        // border: Border.all(width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    width: 70,
+                    height: 40,
+                    padding: const EdgeInsets.only(top: 5),
+                    margin: EdgeInsets.only(
+                        top: device_data.size.height - 725,
+                        left: device_data.size.width - 80),
+                    child: Text(
+                      "$count_markers \ncomercios",
+                      style: const TextStyle(fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else {
+                  return Container();
                 }
               })
             ],
@@ -780,11 +808,12 @@ class _Map1State extends State<Map1> {
                                             'Escribe tu actividad economica',
                                             style: TextStyle(fontSize: 18),
                                           )),
-
                                           content: Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 5),
                                             child: TextField(
+                                                focusNode:
+                                                    textFieldFocus_actividad,
                                                 decoration: InputDecoration(
                                                     suffixIcon: Container(
                                                       color:
@@ -798,6 +827,9 @@ class _Map1State extends State<Map1> {
                                                                           .value);
 
                                                           if (isEconomyActivity) {
+                                                            textFieldFocus_actividad
+                                                                .unfocus();
+
                                                             buttonDisable
                                                                 .value = false;
                                                             print(buttonDisable
@@ -834,7 +866,6 @@ class _Map1State extends State<Map1> {
                                                       value;
                                                 }),
                                           ),
-////////////////
                                           actions: [
                                             Center(
                                               child: ElevatedButton(
@@ -993,6 +1024,9 @@ class _Map1State extends State<Map1> {
                                                                   _markers[
                                                                           markerId] =
                                                                       marker;
+                                                                  count_markers =
+                                                                      _markers
+                                                                          .length;
                                                                 });
                                                               }
                                                               // ignore: use_build_context_synchronously
