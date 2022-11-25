@@ -734,6 +734,7 @@ class _Map1State extends State<Map1> {
                     _textActividadEconomica.clear();
                     actividadEconomica.value = '';
                     buttonDisable.value = true;
+                    count_markers = 0;
                   });
                 },
                 child: const Icon(Icons.delete_rounded),
