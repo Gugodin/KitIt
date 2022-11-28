@@ -882,7 +882,6 @@ class _Map1State extends State<Map1> {
 
 
 
-
                                                               final icon =
                                                                   await BitmapDescriptor
                                                                       .fromAssetImage(
