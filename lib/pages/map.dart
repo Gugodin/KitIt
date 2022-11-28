@@ -889,7 +889,6 @@ class _Map1State extends State<Map1> {
                                                                 'lib/_img/amarilloyblanco(1).png',
                                                               );
                                                               int cont = 0;
-
                                                               List<Map> list = await datosDenue.fetchPost(
                                                                   actividadEconomica
                                                                       .value,
