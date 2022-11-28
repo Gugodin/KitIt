@@ -879,6 +879,10 @@ class _Map1State extends State<Map1> {
                                                               true
                                                           ? null
                                                           : () async {
+
+
+
+
                                                               final icon =
                                                                   await BitmapDescriptor
                                                                       .fromAssetImage(
@@ -975,6 +979,10 @@ class _Map1State extends State<Map1> {
                                                                       const Offset(
                                                                           0.5,
                                                                           1),
+
+
+
+
                                                                   onTap: () {
                                                                     buttonAE.value =
                                                                         true;
@@ -1017,6 +1025,8 @@ class _Map1State extends State<Map1> {
                                                                         position);
                                                                     update();
                                                                   },
+
+                                                                  
                                                                   draggable:
                                                                       false,
                                                                 );
