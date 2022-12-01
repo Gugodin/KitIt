@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -58,6 +60,7 @@ class _Map1State extends State<Map1> {
   ValueNotifier<String> actividadEconomica = ValueNotifier<String>('');
   ValueNotifier<bool> buttonDisable = ValueNotifier<bool>(true);
   ValueNotifier<bool> buttonAE = ValueNotifier<bool>(false);
+  ValueNotifier<bool> stopAplication = ValueNotifier<bool>(false);
   ValueNotifier<List<int>> totalHabitantes =
       ValueNotifier<List<int>>([0, 0, 0]);
   bool hasChangedFilter = false;
@@ -134,6 +137,7 @@ class _Map1State extends State<Map1> {
 
       print('ESTAS TAPEANDO EL MAPA');
       final resultados = await MySQLConnector.getData(placemarks[0].postalCode);
+
       print(
           "Poligonos pitnados on tap ________________________________________________________________________");
       if (resultados[0].length > 0) {
@@ -251,13 +255,9 @@ class _Map1State extends State<Map1> {
       return false;
     }
 
-    // int conta=0;
     GoogleMap mapa = GoogleMap(
       myLocationEnabled: false,
       mapType: MapType.normal,
-      // zoomControlsEnabled: false,
-      // polygons: hammerIsTaped == true ? paintPolygons() : _polygonSet,
-
       polygons: paintPolygons(),
       onTap: onTap,
       markers: markers,
@@ -311,24 +311,24 @@ class _Map1State extends State<Map1> {
                         onChanged: (value) {
                           direccion.value = value;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hoverColor: Colors.black,
-                          labelText: "Ingrese su dirección",
-                          labelStyle: const TextStyle(color: Colors.black),
-                          border: const OutlineInputBorder(
+                          labelText: "Ingrese su colonia o código postal",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(
                             borderSide:
                                 BorderSide(style: BorderStyle.none, width: 0),
                             borderRadius: BorderRadius.all(
                               Radius.circular(5.0),
                             ),
                           ),
-                          suffixIcon: IconButton(
-                            onPressed: _textLugar.clear,
-                            icon: const Icon(
-                              Icons.clear,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          // suffixIcon: IconButton(
+                          //   onPressed: _textLugar.clear,
+                          //   icon: const Icon(
+                          //     Icons.clear,
+                          //     color: Colors.grey,
+                          //   ),
+                          // ),
                         ),
                       ),
                     ),
@@ -390,9 +390,6 @@ class _Map1State extends State<Map1> {
 
                             postionOnTap = latLngPosition;
 
-                            // hasPaintedAZone = true;
-                            // myPolygon(resultados);
-
                             for (Marker element in markersComers) {
                               _markers[element.markerId] = element;
                             }
@@ -401,7 +398,6 @@ class _Map1State extends State<Map1> {
                       },
                       child: const Icon(
                         Icons.search_rounded,
-                        // color: DesingColors.yellow,
                       ),
                     ),
                   ],
@@ -694,10 +690,10 @@ class _Map1State extends State<Map1> {
                     height: 40,
                     padding: const EdgeInsets.only(top: 5),
                     margin: EdgeInsets.only(
-                        top: device_data.size.height - 725,
+                        top: device_data.size.height * 0.13,
                         left: device_data.size.width - 80),
                     child: Text(
-                      "$count_markers \ncomercios",
+                      "$count_markers \nComercios",
                       style: const TextStyle(fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
@@ -705,7 +701,7 @@ class _Map1State extends State<Map1> {
                 } else {
                   return Container();
                 }
-              })
+              }),
             ],
           ),
         ),
@@ -805,7 +801,7 @@ class _Map1State extends State<Map1> {
                               showDialog(
                                   context: context,
                                   builder: (context) => StatefulBuilder(builder:
-                                          (context, StateSetter setState) {
+                                          (context, StateSetter setState2) {
                                         return AlertDialog(
                                           title: const Center(
                                               child: Text(
@@ -842,7 +838,7 @@ class _Map1State extends State<Map1> {
                                                             buttonDisable
                                                                 .value = true;
                                                           }
-                                                          setState(
+                                                          setState2(
                                                             () {},
                                                           );
                                                         },
@@ -882,9 +878,6 @@ class _Map1State extends State<Map1> {
                                                               true
                                                           ? null
                                                           : () async {
-
-
-
                                                               final icon =
                                                                   await BitmapDescriptor
                                                                       .fromAssetImage(
@@ -901,44 +894,47 @@ class _Map1State extends State<Map1> {
                                                                   postionOnTap!
                                                                       .longitude
                                                                       .toString());
-                                                              //CODE GOOGLE PLACES ................................
-                                                              List<Map> lista_places = await GooglePlace.get_places_all(
-                                                                  actividadEconomica
-                                                                      .value,
-                                                                  postionOnTap!
-                                                                      .latitude
-                                                                      .toString(),
-                                                                  postionOnTap!
-                                                                      .longitude
-                                                                      .toString());
-                                                              int contador_places =
-                                                                  0;
+                                                              // //CODE GOOGLE PLACES ................................
+                                                              // List<Map> lista_places = await GooglePlace.get_places_all(
+                                                              //     actividadEconomica
+                                                              //         .value,
+                                                              //     postionOnTap!
+                                                              //         .latitude
+                                                              //         .toString(),
+                                                              //     postionOnTap!
+                                                              //         .longitude
+                                                              //         .toString());
+                                                              // int contador_places =
+                                                              //     0;
 
-                                                              for (var element
-                                                                  in lista_places) {
-                                                                String id =
-                                                                    "Place $contador_places";
-                                                                Marker
-                                                                    marker_place =
-                                                                    await GooglePlace
-                                                                        .marker_window_places(
-                                                                  id,
-                                                                  LatLng(
-                                                                    element[
-                                                                        "lat"],
-                                                                    element[
-                                                                        "lon"],
-                                                                  ),
-                                                                  element[
-                                                                      "nombre"],
-                                                                  _customInfoWindowController,
-                                                                );
+                                                              // for (var element
+                                                              //     in lista_places) {
+                                                              //   String id =
+                                                              //       "Place $contador_places";
+                                                              //   Marker
+                                                              //       marker_place =
+                                                              //       await GooglePlace
+                                                              //           .marker_window_places(
+                                                              //     id,
+                                                              //     LatLng(
+                                                              //       element[
+                                                              //           "lat"],
+                                                              //       element[
+                                                              //           "lon"],
+                                                              //     ),
+                                                              //     element[
+                                                              //         "nombre"],
+                                                              //     _customInfoWindowController,
+                                                              //   );
 
-                                                                _markers[marker_place
-                                                                        .markerId] =
-                                                                    marker_place;
-                                                                contador_places++;
-                                                              }
+                                                              //   _markers[marker_place
+                                                              //           .markerId] =
+                                                              //       marker_place;
+                                                              //   contador_places++;
+                                                              // }
+                                                              print(
+                                                                  'LISTA QUE REGRESA DENUE');
+                                                              print(list);
 
                                                               for (var element
                                                                   in list) {
@@ -980,10 +976,6 @@ class _Map1State extends State<Map1> {
                                                                       const Offset(
                                                                           0.5,
                                                                           1),
-
-
-
-
                                                                   onTap: () {
                                                                     buttonAE.value =
                                                                         true;
@@ -1026,8 +1018,6 @@ class _Map1State extends State<Map1> {
                                                                         position);
                                                                     update();
                                                                   },
-
-                                                                  
                                                                   draggable:
                                                                       false,
                                                                 );
@@ -1041,6 +1031,10 @@ class _Map1State extends State<Map1> {
                                                                           .length;
                                                                 });
                                                               }
+                                                              print(
+                                                                  'MARCADORES QUE SEGUN CREO');
+                                                              print(_markers
+                                                                  .length);
                                                               // ignore: use_build_context_synchronously
                                                               Navigator.pop(
                                                                   context);
@@ -1238,12 +1232,7 @@ class _Map1State extends State<Map1> {
         listFiltered.add(place);
       }
     }
-    // print('LO FILTRADOOOOO');
-    // print(listFiltered.length);
-    // listFiltered.forEach((element) {
-    // print(element['nombre']);
-    // print(element['precio']);
-    // });
+
     return listFiltered;
   }
 }

@@ -1,9 +1,14 @@
+// ignore_for_file: unnecessary_brace_in_string_interps
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class datosDenue {
+  
   static Future<List<Map>> fetchPost(
       tipoComercio, String latitud, String longitud) async {
+
+        print('URL: https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${tipoComercio}/${latitud},${longitud}/1500/d28a2536-ca8d-47da-bfac-6a57d5c396e0');
     var response = await http.get(Uri.parse(
         'https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${tipoComercio}/${latitud},${longitud}/1500/d28a2536-ca8d-47da-bfac-6a57d5c396e0'));
 
@@ -19,6 +24,9 @@ class datosDenue {
           'descripcion':element["Clase_actividad"]
         });
       }
+      print('ESTO SON LOS NEGOCIOS');
+      print(negocios);
+
       return negocios;
     } else {
       throw Exception('Failed to load post');
