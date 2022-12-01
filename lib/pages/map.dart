@@ -702,6 +702,30 @@ class _Map1State extends State<Map1> {
                   return Container();
                 }
               }),
+              Builder(builder: (context) {
+                if (hammerIsTaped) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.5),
+                        // border: Border.all(width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    width: 100,
+                    height: 65,
+                    padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
+                    margin: EdgeInsets.only(
+                        top: device_data.size.height * 0.13,
+                        left: device_data.size.width - 90,
+                        right: 10),
+                    child: const Text(
+                      "El martillo de permisos esta activado",
+                      style: TextStyle(fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }),
             ],
           ),
         ),
@@ -884,12 +908,16 @@ class _Map1State extends State<Map1> {
                                                               true
                                                           ? null
                                                           : () async {
+                                                              print(
+                                                                  'ES ACA EL ERROR NO?');
                                                               final icon =
                                                                   await BitmapDescriptor
                                                                       .fromAssetImage(
                                                                 const ImageConfiguration(),
                                                                 'lib/_img/marcador_denue_chico.png',
                                                               );
+                                                              print(
+                                                                  'SEGUUUUUUUUUUUUN');
                                                               int cont = 0;
                                                               List<Map> list = await datosDenue.fetchPost(
                                                                   actividadEconomica
