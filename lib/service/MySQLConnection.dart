@@ -75,6 +75,19 @@ class MySQLConnector {
     for (final row in result.rows) {
       markers_list.add(row.assoc());
     }
+    // print('JALO?');
+    // print(markers_list);
+    return markers_list;
+  }
+
+  static Future<List> getSecurityByColonia(String colonia) async {
+    List markers_list = [];
+    var result = await connector.execute(
+        "SELECT delito,cantidad FROM delitos where colonia=:COLONIA",
+        {'COLONIA': colonia});
+    for (final row in result.rows) {
+      markers_list.add(row.assoc());
+    }
     print('JALO?');
     print(markers_list);
     return markers_list;

@@ -43,15 +43,18 @@ class DemograficModal extends StatelessWidget {
 
     Size size = MediaQuery.of(context).size;
     return AlertDialog(
-      title: const Center(child: Text('Datos Demograficos')),
-      content: SizedBox(
-        height: size.height * 0.35,
-        width: size.width * 0.5,
-        child: PageView(
-          children: [
-            womenAndMen(size, chartData),
-            otherDemografic(size),
-          ],
+      title: const Center(child: Text('Datos Demográficos')),
+      content: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: SizedBox(
+          height: size.height * 0.35,
+          width: size.width * 0.5,
+          child: PageView(
+            children: [
+              womenAndMen(size, chartData),
+              otherDemografic(size),
+            ],
+          ),
         ),
       ),
     );
@@ -65,7 +68,7 @@ class DemograficModal extends StatelessWidget {
         children: [
           const Text('Total de habitantes en la zona: '),
           Text(
-            total.toString(),
+            intInFormatString(total),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -93,7 +96,7 @@ class DemograficModal extends StatelessWidget {
   }
 
   otherDemografic(Size size) {
-    print('ENTRANDO A OTRO DEMOGRAFICOOOOSOSOOSOS');
+    // print('ENTRANDO A OTRO DEMOGRAFICOOOOSOSOOSOS');
     Map listOfExpandible = {
       'MS': [],
       'SI': [],
@@ -148,7 +151,7 @@ class DemograficModal extends StatelessWidget {
       }
     }
 
-    print(listOfExpandible);
+    // print(listOfExpandible);
     return SizedBox(
       height: size.height * 0.5,
       width: size.width * 0.5,
@@ -160,10 +163,18 @@ class DemograficModal extends StatelessWidget {
   List<Widget> returnExpandibles(Map listOfExpandible, Size size) {
     List<Widget> listWidgets = [];
 
+    listWidgets.add(const Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: Text(
+        'Del estado de "Jalisco"',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    ));
+
     for (var categoria in listOfExpandible.keys) {
       String name = getCategoriString(categoria);
       List<Widget> explandible = [];
-      print('Name: ${name}}');
+      // print('Name: ${name}}');
       for (var element in listOfExpandible[categoria]) {
         explandible.add(
           Padding(
@@ -187,7 +198,7 @@ class DemograficModal extends StatelessWidget {
           ),
         );
       }
-      print(explandible);
+      // print(explandible);
       Widget w = Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: SizedBox(
@@ -246,5 +257,23 @@ class DemograficModal extends StatelessWidget {
     } else {
       return 'Población';
     }
+  }
+
+  String intInFormatString(int total) {
+    List s = total.toString().split('');
+    List<String> finalString = [];
+    int cont = 0;
+
+    for (var i = s.length - 1; i >= 0; i--) {
+
+      finalString.insert(0, s[i].toString());
+      cont++;
+      if (cont == 3) {
+        cont = 0;
+        finalString.insert(0, ',');
+      }
+    }
+
+    return finalString.join();
   }
 }

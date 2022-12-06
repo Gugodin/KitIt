@@ -17,7 +17,7 @@ class _SliderM2State extends State<SliderM2> {
   @override
   Widget build(BuildContext context) {
     return RangeSlider(
-      activeColor: DesingColors.yellow,
+      activeColor: DesingColors.orange,
       inactiveColor: Color.fromARGB(255, 38, 38, 38),
       min: 100,
       max: 1000,

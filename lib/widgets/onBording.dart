@@ -19,7 +19,7 @@ class _onBordingDataState extends State<onBordingData> {
     return Container(
       child: IntroductionScreen(
         pages: [
-          page_view('Buscar', 'Informacion buscar', 'BUSCA_SIN FONDO',
+          page_view('Busca', 'Informacion buscar', 'BUSCA_SIN FONDO',
               const Color(0XFF01beff)),
           page_view('Analiza', 'Informacion analiza', 'ANALIZA_SIN FONDO',
               const Color(0XFFff9f55)),

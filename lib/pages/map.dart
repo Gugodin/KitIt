@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -14,7 +12,6 @@ import 'package:kitit/service/datos_predios.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:kitit/widgets/SliderM2.dart';
 import 'package:kitit/widgets/demograficModal.dart';
-import 'package:kitit/service/google_places.dart';
 import 'package:kitit/widgets/modal_window.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
 import 'package:kitit/widgets/widow_map.dart';
@@ -411,7 +408,8 @@ class _Map1State extends State<Map1> {
                     margin: EdgeInsets.symmetric(
                         vertical: size.height * 0.12, horizontal: 10),
                     child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(primary: Colors.black),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black),
                         onPressed: () async {
                           ///////
 
@@ -685,18 +683,20 @@ class _Map1State extends State<Map1> {
                 if (count_markers > 0) {
                   return Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.white.withOpacity(0.9),
                         // border: Border.all(width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     width: 70,
                     height: 40,
                     padding: const EdgeInsets.only(top: 5),
                     margin: EdgeInsets.only(
-                        top: device_data.size.height * 0.13,
-                        left: device_data.size.width - 80),
+                        top: device_data.size.height * 0.185, left: 10),
                     child: Text(
                       "$count_markers \nComercios",
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: DesingColors.orange,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -708,19 +708,22 @@ class _Map1State extends State<Map1> {
                 if (hammerIsTaped) {
                   return Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.white.withOpacity(0.9),
                         // border: Border.all(width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     width: 100,
-                    height: 65,
+                    height: 60,
                     padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
                     margin: EdgeInsets.only(
-                        top: device_data.size.height * 0.13,
-                        left: device_data.size.width - 90,
-                        right: 10),
+                      top: device_data.size.height * 0.25,
+                      left: 10,
+                    ),
                     child: const Text(
                       "El martillo de permisos esta activado",
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: DesingColors.orange,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -805,12 +808,40 @@ class _Map1State extends State<Map1> {
                               color: Colors.white,
                             )),
                         SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          child: const Icon(Icons.local_police_rounded),
+                          backgroundColor: DesingColors.orange,
+                          onTap: () async {
+                            print('Aun sigue las coords?????');
+                            print(postionOnTap);
+
+                            var direccion = await placemarkFromCoordinates(
+                                postionOnTap!.latitude,
+                                postionOnTap!.longitude);
+
+                            print('ESTA ES LA DIRECCION:');
+                            print(direccion[0].subLocality);
+                            String? colonia = direccion[0].subLocality;
+
+                            colonia = colonia?.toUpperCase();
+                            print('COLONIA TO UPPER ${colonia}');
+
+                            print('BUSCANDO DELITOOOOOSSSS');
+                            var securityList =
+                                await MySQLConnector.getSecurityByColonia(
+                                    colonia!);
+                            print('Lista de delitos: ${securityList}');
+                            //COMENTARIO PARA DANIEL: AQUI YA LO UNICO QUE TIENES QUE HACER ES UTILIZAR LA LISTA SECURITYLIST PARA MOSTRARLO EN UNA VENTANA MODAL
+                          },
+                          child: const Icon(
+                            Icons.local_police_rounded,
+                            color: Colors.white,
+                          ),
                         ),
                         SpeedDialChild(
-                          backgroundColor: DesingColors.yellow,
-                          child: const Icon(Icons.analytics_rounded),
+                          backgroundColor: DesingColors.orange,
+                          child: const Icon(
+                            Icons.analytics_rounded,
+                            color: Colors.white,
+                          ),
                           onTap: () async {
                             final otherDemografic =
                                 await MySQLConnector.getDemograficData();
@@ -837,7 +868,7 @@ class _Map1State extends State<Map1> {
                                         return AlertDialog(
                                           title: const Center(
                                               child: Text(
-                                            'Escribe tu actividad economica',
+                                            'Escribe tu actividad económica',
                                             style: TextStyle(fontSize: 18),
                                           )),
                                           content: Padding(
@@ -864,8 +895,6 @@ class _Map1State extends State<Map1> {
 
                                                             buttonDisable
                                                                 .value = false;
-                                                            print(buttonDisable
-                                                                .value);
                                                           } else {
                                                             buttonDisable
                                                                 .value = true;
@@ -889,6 +918,18 @@ class _Map1State extends State<Map1> {
                                                                 true
                                                         ? 'Escribe una actividad economica valida por favor'
                                                         : null,
+                                                    helperText: actividadEconomica
+                                                                    .value !=
+                                                                '' &&
+                                                            buttonDisable
+                                                                    .value ==
+                                                                false
+                                                        ? 'Actividad economica valida'
+                                                        : null,
+                                                    helperStyle:
+                                                        const TextStyle(
+                                                      color: Colors.green,
+                                                    ),
                                                     hintText:
                                                         'Ejemplo: Abarrotes'),
                                                 controller:
@@ -903,8 +944,9 @@ class _Map1State extends State<Map1> {
                                               child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                          primary: DesingColors
-                                                              .dark),
+                                                          backgroundColor:
+                                                              DesingColors
+                                                                  .dark),
                                                   onPressed:
                                                       buttonDisable.value ==
                                                               true

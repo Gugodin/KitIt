@@ -10,18 +10,18 @@ class SliderPrice extends StatefulWidget {
 }
 
 class _SliderPriceState extends State<SliderPrice> {
-  static double _maxValue = 17000;
-  static double _minValue = 4000;
+  static double _maxValue = 200000;
+  static double _minValue = 50000;
 
   RangeValues values = RangeValues(_minValue, _maxValue);
   @override
   Widget build(BuildContext context) {
     return RangeSlider(
-      activeColor: DesingColors.yellow,
+      activeColor: DesingColors.orange,
       inactiveColor: Color.fromARGB(255, 38, 38, 38),
       min: 1000,
-      max: 20000,
-      divisions: 19,
+      max: 250000,
+      divisions: 249,
       labels: RangeLabels('\$${values.start.round().toString()}',
           '\$${values.end.round().toString()}'),
       values: values,
@@ -30,7 +30,6 @@ class _SliderPriceState extends State<SliderPrice> {
           values = value;
           widget.rangeValue(value);
         });
-
       },
     );
   }
