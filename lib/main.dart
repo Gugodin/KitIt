@@ -38,10 +38,9 @@ class MyApp extends StatelessWidget {
     print(entro);
     return MaterialApp(
         title: 'Kikit',
-        
         debugShowCheckedModeBanner: false,
-      //  initialRoute: entro ? 'map' : 'onBording',
-        initialRoute: 'onBording',
+        //  initialRoute: entro ? 'map' : 'onBording',
+        initialRoute: 'map',
         routes: {
           'map': (BuildContext context) => Map1(),
           'onBording': (BuildContext context) => const onBordingData()

@@ -53,7 +53,7 @@ class _Map1State extends State<Map1> {
     target: LatLng(20.6599162, -103.3450723),
     zoom: 11,
   );
-
+  List? filterList;
   ValueNotifier<String> direccion = ValueNotifier<String>('');
   ValueNotifier<String> actividadEconomica = ValueNotifier<String>('');
   ValueNotifier<bool> buttonDisable = ValueNotifier<bool>(true);
@@ -579,6 +579,10 @@ class _Map1State extends State<Map1> {
                           List filteredList =
                               filtiringList(res_data, clasification);
 
+                          setState(() {
+                            filterList = filteredList;
+                          });
+
                           MarkersCom markerscom = MarkersCom(filteredList);
                           final markersComers =
                               // ignore: use_build_context_synchronously
@@ -604,39 +608,77 @@ class _Map1State extends State<Map1> {
                 builder: (context) {
                   if (hasChangedFilter) {
                     return Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: size.height * 0.12, horizontal: 10),
-                      child: ElevatedButton(
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.black),
-                          onPressed: () async {
-                            var res_data =
-                                await MySQLConnector.getMarkersbyCP(postalCode);
+                      margin: EdgeInsets.only(top: size.height * 0.12),
+                      // color: Colors.blue,
+                      height: size.height * 0.7,
+                      width: size.width * 0.8,
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: size.height * 0.05,
+                            // padding: const EdgeInsets.only(bottom: 12),
+                            margin: EdgeInsets.only(
+                                left: 10,
+                                top: 5,
+                                right: 10,
+                                bottom: size.height * 0.58),
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black),
+                                onPressed: () async {
+                                  var res_data =
+                                      await MySQLConnector.getMarkersbyCP(
+                                          postalCode);
 
-                            MarkersCom markerscom = MarkersCom(res_data);
-                            // ignore: use_build_context_synchronously
-                            final markersComers =
-                                // ignore: use_build_context_synchronously
-                                await markerscom.printMarkersComers(
-                                    _customInfoWindowController,
-                                    context,
-                                    deviceData);
+                                  MarkersCom markerscom = MarkersCom(res_data);
+                                  // ignore: use_build_context_synchronously
+                                  final markersComers =
+                                      // ignore: use_build_context_synchronously
+                                      await markerscom.printMarkersComers(
+                                          _customInfoWindowController,
+                                          context,
+                                          deviceData);
 
-                            setState(() {
-                              for (var element in clasification.keys) {
-                                clasification[element] = null;
-                              }
-                              hasChangedFilter = hasClasificationChanged();
+                                  setState(() {
+                                    for (var element in clasification.keys) {
+                                      clasification[element] = null;
+                                    }
+                                    hasChangedFilter =
+                                        hasClasificationChanged();
 
-                              // REGRESAR LOS MARKERS NORMALES
-                              _markers.clear();
+                                    // REGRESAR LOS MARKERS NORMALES
+                                    _markers.clear();
 
-                              for (Marker element in markersComers) {
-                                _markers[element.markerId] = element;
-                              }
-                            });
-                          },
-                          child: const Icon(Icons.filter_list_off_rounded)),
+                                    for (Marker element in markersComers) {
+                                      _markers[element.markerId] = element;
+                                    }
+                                  });
+                                },
+                                child:
+                                    const Icon(Icons.filter_list_off_rounded)),
+                          ),
+                          Positioned(
+                            right: 0,
+                            child: Container(
+                              // margin: EdgeInsets.only(bottom: size.height * 0.58),
+                              // height: size.height * ,
+                              width: size.width * 0.5,
+                              child: ExpansionTile(
+                                collapsedBackgroundColor: Colors.black,
+                                backgroundColor: Colors.black,
+                                iconColor: Colors.white,
+                                collapsedIconColor: Colors.white,
+                                title: const Text(
+                                  'Listado de locales',
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
+                                ),
+                                children: localesExpancion(filterList!),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }
                   return SizedBox();
@@ -1312,5 +1354,23 @@ class _Map1State extends State<Map1> {
     }
 
     return listFiltered;
+  }
+
+  List<ListTile> localesExpancion(List infoLocales) {
+    List<ListTile> list = [];
+    print('INFOLOCALEEEES');
+    print(infoLocales);
+    for (var local in infoLocales) {
+      ListTile a = ListTile(
+        title: Text(local['tipo_vivienda'].toString(),
+            style: const TextStyle(fontSize: 12, color: Colors.white)),
+        subtitle: Text('Precio: \$${local['precio'].toString()}',
+            style: const TextStyle(fontSize: 12, color: DesingColors.orange)),
+        leading: const Icon(Icons.house_rounded, color: Colors.white),
+      );
+      list.add(a);
+    }
+
+    return list;
   }
 }
