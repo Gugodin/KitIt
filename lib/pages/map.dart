@@ -13,6 +13,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kitit/widgets/SliderM2.dart';
 import 'package:kitit/widgets/demograficModal.dart';
 import 'package:kitit/widgets/modal_window.dart';
+import 'package:kitit/widgets/modal_window_delitos.dart';
 import 'package:kitit/widgets/polygons_metods.dart';
 import 'package:kitit/widgets/widow_map.dart';
 import 'package:kitit/service/DENUE_data.dart';
@@ -342,9 +343,11 @@ class _Map1State extends State<Map1> {
                         if (_textLugar.text == '') {
                           DataSave.getInicio();
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Escribe o selecciona una zona por favor')));
+                            const SnackBar(
+                              content: Text(
+                                  'Escribe o selecciona una zona por favor'),
+                            ),
+                          );
                         } else {
                           final locations = await getLocation();
 
@@ -871,6 +874,18 @@ class _Map1State extends State<Map1> {
                                 await MySQLConnector.getSecurityByColonia(
                                     colonia!);
                             print('Lista de delitos: ${securityList}');
+                            // ignore: use_build_context_synchronously
+                            if (securityList.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'La informacion de seguridad no se encuentra disponible para esta zona'),
+                                ),
+                              );
+                            } else {
+                              Modalwindowdelitos.modal(context, securityList);
+                            }
+
                             //COMENTARIO PARA DANIEL: AQUI YA LO UNICO QUE TIENES QUE HACER ES UTILIZAR LA LISTA SECURITYLIST PARA MOSTRARLO EN UNA VENTANA MODAL
                           },
                           child: const Icon(
