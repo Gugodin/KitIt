@@ -97,17 +97,22 @@ class MarkersCom {
                               mainAxisSpacing: 5,
                               crossAxisCount: 3,
                               children: <Widget>[
+
+
+
+
+                                
                                 icon_info(
-                                    "lib/_img/_bosquejo.png",
+                                    "lib/_img/ICONO_SUPERFICIE.png",
                                     data_markers[i]["superficie_m3"] + "m2",
                                     "Superficie"),
                                 icon_info(
-                                    "lib/_img/apertura-de-puerta-abierta.png",
+                                    "lib/_img/ICONO_CUARTOS.png",
                                     data_markers[i]["num_cuartos"],
                                     "Cuartos"),
-                                icon_info("lib/_img/bano-publico.png",
+                                icon_info("lib/_img/ICONO_BAÑOS.png",
                                     data_markers[i]["num_baños"], "Baños"),
-                                icon_info("lib/_img/coche.png",
+                                icon_info("lib/_img/ICONO_CAJON DE CARRO.png",
                                     data_markers[i]["num_cajones"], "Cajones"),
                               ],
                             ),
