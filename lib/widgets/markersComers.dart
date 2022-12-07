@@ -97,6 +97,11 @@ class MarkersCom {
                               mainAxisSpacing: 5,
                               crossAxisCount: 3,
                               children: <Widget>[
+
+
+
+
+                                
                                 icon_info(
                                     "lib/_img/ICONO_SUPERFICIE.png",
                                     data_markers[i]["superficie_m3"] + "m2",
